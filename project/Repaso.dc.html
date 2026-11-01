@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Repaso</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f7fb;--surface:#ffffff;--surface2:#eef0f7;--text:#262b3d;--muted:#5b6280;--border:#e2e5ef;--primary:oklch(0.55 0.2 277);--primary-strong:oklch(0.47 0.2 277);--primary-soft:oklch(0.95 0.03 277);--on-primary:#ffffff;--ok:oklch(0.62 0.14 155);--ok-ink:oklch(0.45 0.12 155);--ok-soft:oklch(0.96 0.035 155);--warn:oklch(0.72 0.14 75);--warn-ink:oklch(0.47 0.1 65);--warn-soft:oklch(0.96 0.045 85);--bad:oklch(0.6 0.19 25);--bad-ink:oklch(0.5 0.18 25);--bad-soft:oklch(0.96 0.03 25);--star:oklch(0.76 0.16 80);--shadow:0 1px 0 rgba(30,35,70,.04),0 10px 28px rgba(30,35,70,.08)}
+body.dark{--bg:#0e1020;--surface:#191c33;--surface2:#242844;--text:#eceefa;--muted:#a3a9c7;--border:#2d3253;--primary:oklch(0.7 0.15 277);--primary-strong:oklch(0.78 0.12 277);--primary-soft:oklch(0.29 0.07 277);--on-primary:#0e1020;--ok:oklch(0.72 0.14 155);--ok-ink:oklch(0.82 0.12 155);--ok-soft:oklch(0.28 0.05 155);--warn:oklch(0.78 0.13 80);--warn-ink:oklch(0.86 0.11 85);--warn-soft:oklch(0.3 0.05 80);--bad:oklch(0.7 0.16 25);--bad-ink:oklch(0.8 0.12 25);--bad-soft:oklch(0.3 0.06 25);--star:oklch(0.82 0.15 85);--shadow:0 10px 30px rgba(0,0,0,.35)}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:'Figtree',system-ui,sans-serif;-webkit-font-smoothing:antialiased;transition:background .25s,color .25s}
+button,input,textarea,select{font:inherit;color:inherit}
+a{color:var(--primary)}a:hover{color:var(--primary-strong)}
+:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+input::placeholder,textarea::placeholder{color:var(--muted);opacity:.75}
+select option{background:var(--surface);color:var(--text)}
+@keyframes rp-in0{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes rp-in1{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes rp-pop{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;flex-direction:column">
+<header style="position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--border)">
+<div style="max-width:1080px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:12px">
+<button onClick="{{ goHome }}" aria-label="Ir a Mis sets" style="display:flex;align-items:center;gap:10px;background:none;border:0;padding:4px 6px;margin-left:-6px;cursor:pointer;border-radius:10px">
+<span style="width:32px;height:32px;border-radius:10px;background:var(--primary);color:var(--on-primary);display:grid;place-items:center;font-weight:800;font-size:18px">R</span>
+<span style="font-weight:800;font-size:21px;letter-spacing:-.02em">Repaso</span>
+</button>
+<div style="flex:1"></div>
+<button onClick="{{ toggleDark }}" style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;border:2px solid var(--border);background:var(--surface);font-weight:600;font-size:14px;cursor:pointer;transition:border-color .15s" style-hover="border-color:var(--primary)">
+<span style="width:14px;height:14px;border-radius:50%;border:2px solid currentColor;background:linear-gradient(90deg,currentColor 50%,transparent 50%)"></span>{{ darkLabel }}</button>
+</div>
+</header>
+<main style="flex:1;width:100%;max-width:1080px;margin:0 auto;padding:28px 20px 96px">
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<section style="animation:rp-in0 .35s ease both">
+<div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:26px">
+<div>
+<h1 style="margin:0;font-size:clamp(28px,4vw,38px);font-weight:800;letter-spacing:-.025em">Mis sets</h1>
+<p style="margin:6px 0 0;color:var(--muted);font-size:16px">{{ homeSub }}</p>
+</div>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<button onClick="{{ openImport }}" style="display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:12px;border:2px solid var(--border);background:var(--surface);font-weight:700;font-size:15px;cursor:pointer;transition:border-color .15s,color .15s" style-hover="border-color:var(--primary);color:var(--primary-strong)">Importar set</button>
+<button onClick="{{ newSet }}" style="display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:12px;border:2px solid var(--primary);background:var(--primary);color:var(--on-primary);font-weight:700;font-size:15px;cursor:pointer;transition:background .15s" style-hover="background:var(--primary-strong);border-color:var(--primary-strong)">+ Crear set</button>
+</div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px">
+<sc-for list="{{ sets }}" as="s" hint-placeholder-count="2">
+<button onClick="{{ s.open }}" style="text-align:left;background:var(--surface);border:2px solid transparent;border-radius:20px;padding:20px 22px;box-shadow:var(--shadow);cursor:pointer;display:flex;flex-direction:column;gap:12px;min-height:168px;transition:transform .2s,border-color .2s" style-hover="transform:translateY(-3px);border-color:var(--primary)">
+<div style="font-weight:700;font-size:19px;line-height:1.25;text-wrap:pretty">{{ s.title }}</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px">
+<span style="padding:3px 10px;border-radius:999px;background:var(--surface2);color:var(--muted);font-size:13px;font-weight:700">{{ s.countLabel }}</span>
+<span style="padding:3px 10px;border-radius:999px;background:var(--surface2);color:var(--muted);font-size:13px;font-weight:600">{{ s.langs }}</span>
+</div>
+<div style="margin-top:auto;display:flex;flex-direction:column;gap:7px;width:100%">
+<div style="height:8px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;width:{{ s.pctW }};background:var(--ok);border-radius:99px;transition:width .4s"></div></div>
+<div style="font-size:13px;color:var(--muted);font-weight:600">{{ s.pctLabel }}</div>
+</div>
+</button>
+</sc-for>
+</div>
+<sc-if value="{{ noSets }}" hint-placeholder-val="{{ false }}">
+<div style="background:var(--surface);border:2px dashed var(--border);border-radius:20px;padding:48px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px">
+<div style="font-weight:800;font-size:20px">Todavía no hay sets</div>
+<p style="margin:0;color:var(--muted);max-width:420px">Crea tu primer set de tarjetas o pega una lista para importarla.</p>
+</div>
+</sc-if>
+</section>
+</sc-if>
+
+<sc-if value="{{ isSet }}" hint-placeholder-val="{{ false }}">
+<section style="display:flex;flex-direction:column;gap:26px;animation:rp-in0 .35s ease both">
+<div style="display:flex;flex-direction:column;gap:10px">
+<button onClick="{{ goHome }}" style="align-self:flex-start;background:none;border:0;padding:6px 8px;margin-left:-8px;border-radius:8px;color:var(--muted);font-weight:700;cursor:pointer" style-hover="color:var(--text)">← Mis sets</button>
+<div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px">
+<div style="min-width:0">
+<h1 style="margin:0;font-size:clamp(28px,4.5vw,40px);font-weight:800;letter-spacing:-.025em;line-height:1.1;text-wrap:balance">{{ setTitle }}</h1>
+<p style="margin:8px 0 0;color:var(--muted);font-size:15px;font-weight:600">{{ setMeta }}</p>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button onClick="{{ editSet }}" style="padding:9px 16px;border-radius:12px;border:2px solid var(--border);background:var(--surface);font-weight:700;font-size:14px;cursor:pointer" style-hover="border-color:var(--primary);color:var(--primary-strong)">Editar</button>
+<button onClick="{{ exportSet }}" style="padding:9px 16px;border-radius:12px;border:2px solid var(--border);background:var(--surface);font-weight:700;font-size:14px;cursor:pointer" style-hover="border-color:var(--primary);color:var(--primary-strong)">Exportar set</button>
+<button onClick="{{ delSet }}" style="padding:9px 16px;border-radius:12px;border:2px solid var(--border);background:var(--surface);color:var(--bad-ink);font-weight:700;font-size:14px;cursor:pointer" style-hover="border-color:var(--bad)">{{ delLabel }}</button>
+</div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px">
+<button onClick="{{ startCards }}" style="text-align:left;display:flex;align-items:center;gap:16px;padding:20px 22px;border-radius:20px;border:2px solid transparent;background:var(--surface);box-shadow:var(--shadow);cursor:pointer;transition:transform .2s,border-color .2s" style-hover="transform:translateY(-3px);border-color:var(--primary)">
+<span style="width:52px;height:52px;border-radius:14px;background:var(--primary-soft);color:var(--primary);display:grid;place-items:center;flex:none"><span style="position:relative;width:24px;height:18px;display:block"><span style="position:absolute;inset:0;border:2.5px solid currentColor;border-radius:5px;transform:translate(4px,-4px);opacity:.45"></span><span style="position:absolute;inset:0;border:2.5px solid currentColor;border-radius:5px;background:var(--primary-soft)"></span></span></span>
+<span style="display:flex;flex-direction:column;gap:2px"><span style="font-weight:800;font-size:19px">Tarjetas</span><span style="color:var(--muted);font-size:14px">Voltea y repasa</span></span>
+</button>
+<button onClick="{{ startWrite }}" style="text-align:left;display:flex;align-items:center;gap:16px;padding:20px 22px;border-radius:20px;border:2px solid transparent;background:var(--surface);box-shadow:var(--shadow);cursor:pointer;transition:transform .2s,border-color .2s" style-hover="transform:translateY(-3px);border-color:var(--primary)">
+<span style="width:52px;height:52px;border-radius:14px;background:var(--primary-soft);color:var(--primary);display:grid;place-items:center;flex:none;font-weight:800;font-size:20px">Aa</span>
+<span style="display:flex;flex-direction:column;gap:2px"><span style="font-weight:800;font-size:19px">Escribir</span><span style="color:var(--muted);font-size:14px">Escribe la respuesta</span></span>
+</button>
+<button onClick="{{ startListen }}" style="text-align:left;display:flex;align-items:center;gap:16px;padding:20px 22px;border-radius:20px;border:2px solid transparent;background:var(--surface);box-shadow:var(--shadow);cursor:pointer;transition:transform .2s,border-color .2s" style-hover="transform:translateY(-3px);border-color:var(--primary)">
+<span style="width:52px;height:52px;border-radius:14px;background:var(--primary-soft);color:var(--primary);display:grid;place-items:center;flex:none"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"></path><path d="M16.5 8.5a5 5 0 0 1 0 7"></path><path d="M19 6a8.5 8.5 0 0 1 0 12"></path></svg></span>
+<span style="display:flex;flex-direction:column;gap:2px"><span style="font-weight:800;font-size:19px">Escuchar</span><span style="color:var(--muted);font-size:14px">Dictado y traducción</span></span>
+</button>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">
+<div style="background:var(--surface);border-radius:18px;padding:18px 20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px;justify-content:center">
+<div style="display:flex;justify-content:space-between;font-weight:700;font-size:15px"><span>Progreso</span><span style="color:var(--muted)">{{ knownLabel }}</span></div>
+<div style="height:10px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;width:{{ knownW }};background:var(--ok);border-radius:99px;transition:width .4s"></div></div>
+</div>
+<div style="background:var(--surface);border-radius:18px;padding:18px 20px;box-shadow:var(--shadow);display:flex;align-items:center;gap:16px">
+<div style="flex:1;min-width:0"><div style="font-weight:700;font-size:15px">Ignorar acentos</div><div style="color:var(--muted);font-size:13px;margin-top:2px">“estacion” cuenta como “estación”. ä/ö/ü/ß siempre aceptan ae/oe/ue/ss.</div></div>
+<button onClick="{{ toggleAccents }}" role="switch" aria-checked="{{ accPressed }}" aria-label="Ignorar acentos" style="width:48px;height:28px;border-radius:99px;border:0;background:{{ accTrack }};padding:4px;cursor:pointer;transition:background .2s;flex:none"><span style="display:block;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transform:{{ accKnob }};transition:transform .2s"></span></button>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap">
+<h2 style="margin:0;font-size:22px;font-weight:800">Términos <span style="color:var(--muted);font-weight:600">({{ cardCount }})</span></h2>
+<span style="color:var(--muted);font-size:13px">Haz clic en un texto para editarlo</span>
+</div>
+<sc-for list="{{ setCards }}" as="c" hint-placeholder-count="4">
+<div style="background:var(--surface);border-radius:16px;padding:10px 12px 10px 18px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px">
+<span title="{{ c.knownTitle }}" style="width:8px;height:8px;border-radius:50%;background:{{ c.knownDot }};flex:none"></span>
+<div style="flex:1;min-width:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:2px 18px">
+<input value="{{ c.term }}" onChange="{{ c.onTerm }}" aria-label="Término" style="width:100%;min-width:0;border:0;border-bottom:2px solid transparent;background:transparent;padding:8px 2px;font-size:16px;font-weight:700;outline:none;transition:border-color .15s" style-hover="border-bottom-color:var(--border)" style-focus="border-bottom-color:var(--primary)">
+<input value="{{ c.def }}" onChange="{{ c.onDef }}" aria-label="Definición" style="width:100%;min-width:0;border:0;border-bottom:2px solid transparent;background:transparent;padding:8px 2px;font-size:16px;outline:none;transition:border-color .15s" style-hover="border-bottom-color:var(--border)" style-focus="border-bottom-color:var(--primary)">
+</div>
+<button onClick="{{ c.speakTerm }}" aria-label="Escuchar término" style="width:38px;height:38px;border-radius:50%;border:0;background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer;flex:none" style-hover="background:var(--surface2);color:var(--primary)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"></path><path d="M16.5 8.5a5 5 0 0 1 0 7"></path></svg></button>
+<button onClick="{{ c.onStar }}" aria-label="{{ c.starLabel }}" style="width:38px;height:38px;border-radius:50%;border:0;background:transparent;color:{{ c.starColor }};font-size:20px;display:grid;place-items:center;cursor:pointer;flex:none" style-hover="background:var(--surface2)">{{ c.starGlyph }}</button>
+</div>
+</sc-for>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{ isEdit }}" hint-placeholder-val="{{ false }}">
+<section style="max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:22px;animation:rp-in0 .35s ease both">
+<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px">
+<h1 style="margin:0;font-size:clamp(26px,4vw,34px);font-weight:800;letter-spacing:-.02em">{{ editHeading }}</h1>
+<div style="display:flex;gap:8px">
+<button onClick="{{ cancelDraft }}" style="padding:10px 16px;border-radius:12px;border:2px solid var(--border);background:var(--surface);font-weight:700;cursor:pointer" style-hover="border-color:var(--primary)">Cancelar</button>
+<button onClick="{{ saveDraft }}" style="padding:10px 20px;border-radius:12px;border:2px solid var(--primary);background:var(--primary);color:var(--on-primary);font-weight:700;cursor:pointer" style-hover="background:var(--primary-strong);border-color:var(--primary-strong)">Guardar</button>
+</div>
+</div>
+<div style="background:var(--surface);border-radius:20px;padding:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:18px">
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Título</span>
+<input value="{{ draftTitle }}" onChange="{{ onDraftTitle }}" placeholder="Ej. Vocabulario Kapitel 5" style="width:100%;padding:12px 14px;border-radius:12px;border:2px solid var(--border);background:var(--bg);font-size:18px;font-weight:700;outline:none" style-focus="border-color:var(--primary)"></label>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Idioma del término</span>
+<select value="{{ draftTermLang }}" onChange="{{ onDraftTermLang }}" style="width:100%;padding:11px 12px;border-radius:12px;border:2px solid var(--border);background:var(--bg);font-size:15px;font-weight:600;outline:none;cursor:pointer" style-focus="border-color:var(--primary)"><sc-for list="{{ langOpts }}" as="l"><option value="{{ l.code }}">{{ l.name }}</option></sc-for></select></label>
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Idioma de la definición</span>
+<select value="{{ draftDefLang }}" onChange="{{ onDraftDefLang }}" style="width:100%;padding:11px 12px;border-radius:12px;border:2px solid var(--border);background:var(--bg);font-size:15px;font-weight:600;outline:none;cursor:pointer" style-focus="border-color:var(--primary)"><sc-for list="{{ langOpts }}" as="l"><option value="{{ l.code }}">{{ l.name }}</option></sc-for></select></label>
+</div>
+<div style="display:flex;align-items:center;gap:14px">
+<button onClick="{{ toggleDraftAcc }}" role="switch" aria-checked="{{ draftAccPressed }}" aria-label="Ignorar acentos" style="width:48px;height:28px;border-radius:99px;border:0;background:{{ draftAccTrack }};padding:4px;cursor:pointer;transition:background .2s;flex:none"><span style="display:block;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transform:{{ draftAccKnob }};transition:transform .2s"></span></button>
+<span style="font-weight:600">Ignorar acentos al comprobar</span>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{ draftRows }}" as="r" hint-placeholder-count="3">
+<div style="background:var(--surface);border-radius:18px;box-shadow:var(--shadow);overflow:hidden">
+<div style="display:flex;align-items:center;gap:4px;padding:8px 10px 8px 18px;border-bottom:1px solid var(--border)">
+<span style="font-weight:800;color:var(--muted);font-size:14px;flex:1">{{ r.n }}</span>
+<button onClick="{{ r.up }}" disabled="{{ r.upDis }}" aria-label="Subir" style="width:34px;height:34px;border-radius:9px;border:0;background:transparent;cursor:pointer;opacity:{{ r.upOp }};font-weight:700" style-hover="background:var(--surface2)">↑</button>
+<button onClick="{{ r.down }}" disabled="{{ r.downDis }}" aria-label="Bajar" style="width:34px;height:34px;border-radius:9px;border:0;background:transparent;cursor:pointer;opacity:{{ r.downOp }};font-weight:700" style-hover="background:var(--surface2)">↓</button>
+<button onClick="{{ r.del }}" aria-label="Borrar tarjeta" style="width:34px;height:34px;border-radius:9px;border:0;background:transparent;cursor:pointer;color:var(--bad-ink);font-weight:700" style-hover="background:var(--bad-soft)">✕</button>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px 24px;padding:14px 18px 18px">
+<label style="display:flex;flex-direction:column;gap:4px"><input data-row="{{ r.id }}" value="{{ r.term }}" onChange="{{ r.onTerm }}" placeholder="Término" style="width:100%;border:0;border-bottom:2px solid var(--text);background:transparent;padding:8px 2px;font-size:17px;outline:none" style-focus="border-bottom-color:var(--primary)"><span style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Término</span></label>
+<label style="display:flex;flex-direction:column;gap:4px"><input value="{{ r.def }}" onChange="{{ r.onDef }}" placeholder="Definición" style="width:100%;border:0;border-bottom:2px solid var(--text);background:transparent;padding:8px 2px;font-size:17px;outline:none" style-focus="border-bottom-color:var(--primary)"><span style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Definición</span></label>
+</div>
+</div>
+</sc-for>
+<button onClick="{{ addRow }}" style="padding:22px;border-radius:18px;border:2px dashed var(--border);background:transparent;font-weight:800;font-size:16px;color:var(--muted);cursor:pointer;transition:border-color .15s,color .15s" style-hover="border-color:var(--primary);color:var(--primary)">+ Añadir tarjeta</button>
+</div>
+<div style="display:flex;justify-content:flex-end"><button onClick="{{ saveDraft }}" style="padding:14px 28px;border-radius:14px;border:2px solid var(--primary);background:var(--primary);color:var(--on-primary);font-weight:800;font-size:16px;cursor:pointer" style-hover="background:var(--primary-strong);border-color:var(--primary-strong)">Guardar set</button></div>
+</section>
+</sc-if>
+
+<sc-if value="{{ isImport }}" hint-placeholder-val="{{ false }}">
+<section style="display:flex;flex-direction:column;gap:22px;animation:rp-in0 .35s ease both">
+<div style="display:flex;flex-direction:column;gap:10px">
+<button onClick="{{ goHome }}" style="align-self:flex-start;background:none;border:0;padding:6px 8px;margin-left:-8px;border-radius:8px;color:var(--muted);font-weight:700;cursor:pointer" style-hover="color:var(--text)">← Mis sets</button>
+<h1 style="margin:0;font-size:clamp(26px,4vw,34px);font-weight:800;letter-spacing:-.02em">Importar set</h1>
+<p style="margin:0;color:var(--muted);max-width:640px;line-height:1.5">Una tarjeta por línea: <code style="background:var(--surface2);padding:2px 6px;border-radius:6px">término | definición</code> o separado por tabulador (pegar desde Excel). Las líneas con <code style="background:var(--surface2);padding:2px 6px;border-radius:6px">#</code> se ignoran.</p>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:18px;align-items:start">
+<div style="background:var(--surface);border-radius:20px;padding:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px">
+<textarea value="{{ impText }}" onChange="{{ onImpText }}" placeholder="@titulo: Vocabulario Kapitel 5&#10;@idioma_termino: de-DE&#10;@idioma_definicion: es-MX&#10;der Bahnhof | la estación de tren" spellCheck="false" style="width:100%;min-height:300px;resize:vertical;padding:14px;border-radius:12px;border:2px solid var(--border);background:var(--bg);font:500 14px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;outline:none" style-focus="border-color:var(--primary)"></textarea>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button onClick="{{ loadSample }}" style="padding:8px 14px;border-radius:10px;border:2px solid var(--border);background:var(--surface);font-weight:700;font-size:14px;cursor:pointer" style-hover="border-color:var(--primary)">Cargar ejemplo</button>
+<button onClick="{{ pickFile }}" style="padding:8px 14px;border-radius:10px;border:2px solid var(--border);background:var(--surface);font-weight:700;font-size:14px;cursor:pointer" style-hover="border-color:var(--primary)">Abrir archivo .txt</button>
+<input ref="{{ fileRef }}" type="file" accept=".txt,.tsv,.csv,text/plain" onChange="{{ onFile }}" style="display:none">
+</div>
+<sc-if value="{{ impNeedTitle }}" hint-placeholder-val="{{ true }}">
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Título del set</span>
+<input value="{{ impTitle }}" onChange="{{ onImpTitle }}" placeholder="Ej. Vocabulario Kapitel 5" style="width:100%;padding:11px 13px;border-radius:12px;border:2px solid var(--border);background:var(--bg);font-size:16px;font-weight:600;outline:none" style-focus="border-color:var(--primary)"></label>
+</sc-if>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px">
+<sc-if value="{{ impNeedTermLang }}" hint-placeholder-val="{{ true }}">
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Idioma del término</span>
+<select value="{{ impTermLang }}" onChange="{{ onImpTermLang }}" style="width:100%;padding:10px 12px;border-radius:12px;border:2px solid var(--border);background:var(--bg);font-weight:600;outline:none"><sc-for list="{{ langOpts }}" as="l"><option value="{{ l.code }}">{{ l.name }}</option></sc-for></select></label>
+</sc-if>
+<sc-if value="{{ impNeedDefLang }}" hint-placeholder-val="{{ true }}">
+<label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Idioma de la definición</span>
+<select value="{{ impDefLang }}" onChange="{{ onImpDefLang }}" style="width:100%;padding:10px 12px;border-radius:12px;border:2px solid var(--border);background:var(--bg);font-weight:600;outline:none"><sc-for list="{{ langOpts }}" as="l"><option value="{{ l.code }}">{{ l.name }}</option></sc-for></select></label>
+</sc-if>
+</div>
+</div>
+<div style="background:var(--surface);border-radius:20px;padding:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+<h2 style="margin:0;font-size:18px;font-weight:800">Vista previa</h2>
+<span style="color:var(--muted);font-size:13px;font-weight:600">{{ impSummary }}</span>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px">
+<sc-for list="{{ impMeta }}" as="m" hint-placeholder-count="0"><span style="padding:4px 10px;border-radius:999px;background:var(--primary-soft);color:var(--primary-strong);font-size:13px;font-weight:700">{{ m.k }}: {{ m.v }}</span></sc-for>
+</div>
+<sc-if value="{{ impEmpty }}" hint-placeholder-val="{{ true }}">
+<div style="padding:36px 16px;text-align:center;color:var(--muted);border:2px dashed var(--border);border-radius:14px">Pega tu lista a la izquierda para ver cómo se interpreta.</div>
+</sc-if>
+<div style="display:flex;flex-direction:column;gap:6px;max-height:420px;overflow:auto">
+<sc-for list="{{ impRows }}" as="r" hint-placeholder-count="0">
+<div style="display:grid;grid-template-columns:28px minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:baseline;padding:9px 12px;border-radius:10px;background:{{ r.bg }};border:1px solid {{ r.border }};font-size:15px">
+<span style="font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums">{{ r.n }}</span>
+<sc-if value="{{ r.ok }}"><span style="font-weight:700;overflow-wrap:anywhere">{{ r.term }}</span><span style="overflow-wrap:anywhere">{{ r.def }}</span></sc-if>
+<sc-if value="{{ r.bad }}"><span style="color:var(--bad-ink);font-weight:600;overflow-wrap:anywhere">{{ r.raw }}</span><span style="color:var(--bad-ink);font-size:13px;font-weight:700">Sin separador — no se importará</span></sc-if>
+</div>
+</sc-for>
+</div>
+<button onClick="{{ doImport }}" disabled="{{ impDisabled }}" style="margin-top:4px;padding:13px 22px;border-radius:14px;border:2px solid var(--primary);background:var(--primary);color:var(--on-primary);font-weight:800;font-size:16px;cursor:pointer;opacity:{{ impOpacity }}" style-hover="background:var(--primary-strong)">{{ impBtnLabel }}</button>
+</div>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{ isCards }}" hint-placeholder-val="{{ false }}">
+<section style="max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:center;gap:12px">
+<button onClick="{{ toSet }}" style="background:none;border:0;padding:6px 8px;margin-left:-8px;border-radius:8px;color:var(--muted);font-weight:700;cursor:pointer;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" style-hover="color:var(--text)">← {{ setTitle }}</button>
+<div style="flex:1"></div>
+<span style="padding:4px 12px;border-radius:999px;background:var(--primary-soft);color:var(--primary-strong);font-weight:800;font-size:13px">Tarjetas</span>
+<span style="font-weight:800;font-variant-numeric:tabular-nums;font-size:16px">{{ fcCounter }}</span>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{ fcChips }}" as="ch" hint-placeholder-count="4">
+<button onClick="{{ ch.onClick }}" aria-pressed="{{ ch.pressed }}" style="padding:7px 14px;border-radius:999px;border:2px solid {{ ch.border }};background:{{ ch.bg }};color:{{ ch.color }};font-weight:700;font-size:14px;cursor:pointer;transition:all .15s">{{ ch.label }}</button>
+</sc-for>
+</div>
+<div style="height:6px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;width:{{ fcProgW }};background:var(--primary);border-radius:99px;transition:width .35s"></div></div>
+<sc-if value="{{ fcActive }}" hint-placeholder-val="{{ true }}">
+<div style="perspective:1600px;animation:{{ cardAnim }}">
+<div onClick="{{ flip }}" style="position:relative;height:clamp(280px,52vh,440px);transform-style:preserve-3d;transition:{{ cardTransition }};transform:{{ cardTransform }};cursor:pointer">
+<div style="position:absolute;inset:0;backface-visibility:hidden;background:var(--surface);border-radius:26px;box-shadow:var(--shadow);border:1px solid var(--border);display:flex;flex-direction:column;padding:16px 18px 18px 24px">
+<div style="display:flex;align-items:center;gap:4px">
+<span style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">{{ fcFrontLabel }}</span>
+<div style="flex:1"></div>
+<button onClick="{{ fcStar }}" aria-label="{{ fcStarLabel }}" style="width:42px;height:42px;border-radius:50%;border:0;background:transparent;color:{{ fcStarColor }};font-size:22px;display:grid;place-items:center;cursor:pointer" style-hover="background:var(--surface2)">{{ fcStarGlyph }}</button>
+<button onClick="{{ fcSpeakFront }}" aria-label="Escuchar" style="width:42px;height:42px;border-radius:50%;border:0;background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer" style-hover="background:var(--surface2);color:var(--primary)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"></path><path d="M16.5 8.5a5 5 0 0 1 0 7"></path><path d="M19 6a8.5 8.5 0 0 1 0 12"></path></svg></button>
+</div>
+<div style="flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;font-size:clamp(26px,4.6vw,44px);font-weight:600;line-height:1.25;text-wrap:balance;overflow-wrap:anywhere">{{ fcFront }}</div>
+<div style="text-align:center;font-size:13px;color:var(--muted)">Haz clic o pulsa Espacio para voltear</div>
+</div>
+<div style="position:absolute;inset:0;backface-visibility:hidden;transform:rotateY(180deg);background:var(--surface);border-radius:26px;box-shadow:var(--shadow);border:2px solid var(--primary);display:flex;flex-direction:column;padding:16px 18px 18px 24px">
+<div style="display:flex;align-items:center;gap:4px">
+<span style="font-size:12px;font-weight:800;color:var(--primary);text-transform:uppercase;letter-spacing:.08em">{{ fcBackLabel }}</span>
+<div style="flex:1"></div>
+<button onClick="{{ fcStar }}" aria-label="{{ fcStarLabel }}" style="width:42px;height:42px;border-radius:50%;border:0;background:transparent;color:{{ fcStarColor }};font-size:22px;display:grid;place-items:center;cursor:pointer" style-hover="background:var(--surface2)">{{ fcStarGlyph }}</button>
+<button onClick="{{ fcSpeakBack }}" aria-label="Escuchar" style="width:42px;height:42px;border-radius:50%;border:0;background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer" style-hover="background:var(--surface2);color:var(--primary)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"></path><path d="M16.5 8.5a5 5 0 0 1 0 7"></path><path d="M19 6a8.5 8.5 0 0 1 0 12"></path></svg></button>
+</div>
+<div style="flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;font-size:clamp(24px,4.2vw,40px);font-weight:500;line-height:1.3;text-wrap:balance;overflow-wrap:anywhere">{{ fcBack }}</div>
+<div style="text-align:center;font-size:13px;color:var(--muted)">¿Lo sabías?</div>
+</div>
+</div>
+</div>
+<div style="display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,1fr) auto;gap:10px">
+<button onClick="{{ fcPrev }}" aria-label="Anterior" style="width:54px;border-radius:14px;border:2px solid var(--border);background:var(--surface);font-size:20px;font-weight:800;cursor:pointer;opacity:{{ fcPrevOp }}" style-hover="border-color:var(--primary)">←</button>
+<button onClick="{{ fcLearn }}" style="padding:15px 10px;border-radius:14px;border:2px solid var(--bad);background:var(--bad-soft);color:var(--bad-ink);font-weight:800;font-size:16px;cursor:pointer;transition:transform .15s" style-hover="transform:translateY(-2px)" style-active="transform:scale(.98)">Sigo aprendiendo</button>
+<button onClick="{{ fcKnow }}" style="padding:15px 10px;border-radius:14px;border:2px solid var(--ok);background:var(--ok-soft);color:var(--ok-ink);font-weight:800;font-size:16px;cursor:pointer;transition:transform .15s" style-hover="transform:translateY(-2px)" style-active="transform:scale(.98)">Ya lo sé</button>
+<button onClick="{{ fcNext }}" aria-label="Siguiente" style="width:54px;border-radius:14px;border:2px solid var(--border);background:var(--surface);font-size:20px;font-weight:800;cursor:pointer" style-hover="border-color:var(--primary)">→</button>
+</div>
+<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px 18px;font-size:13px;color:var(--muted)">
+<span style="display:flex;align-items:center;gap:6px"><span style="padding:1px 7px;border-radius:6px;border:1px solid var(--border);border-bottom-width:2px;background:var(--surface);font:600 12px ui-monospace,Menlo,monospace">Espacio</span>voltear</span>
+<span style="display:flex;align-items:center;gap:6px"><span style="padding:1px 7px;border-radius:6px;border:1px solid var(--border);border-bottom-width:2px;background:var(--surface);font:600 12px ui-monospace,Menlo,monospace">← →</span>navegar</span>
+<span style="display:flex;align-items:center;gap:6px"><span style="padding:1px 7px;border-radius:6px;border:1px solid var(--border);border-bottom-width:2px;background:var(--surface);font:600 12px ui-monospace,Menlo,monospace">1</span>sigo aprendiendo</span>
+<span style="display:flex;align-items:center;gap:6px"><span style="padding:1px 7px;border-radius:6px;border:1px solid var(--border);border-bottom-width:2px;background:var(--surface);font:600 12px ui-monospace,Menlo,monospace">2</span>ya lo sé</span>
+<span style="display:flex;align-items:center;gap:6px"><span style="padding:1px 7px;border-radius:6px;border:1px solid var(--border);border-bottom-width:2px;background:var(--surface);font:600 12px ui-monospace,Menlo,monospace">S</span>estrella</span>
+</div>
+</sc-if>
+<sc-if value="{{ fcDone }}" hint-placeholder-val="{{ false }}">
+<div style="background:var(--surface);border-radius:26px;box-shadow:var(--shadow);padding:clamp(24px,5vw,44px);display:flex;flex-direction:column;gap:22px;animation:rp-pop .35s ease both">
+<div><h2 style="margin:0;font-size:clamp(24px,4vw,32px);font-weight:800;letter-spacing:-.02em">{{ fcDoneTitle }}</h2><p style="margin:6px 0 0;color:var(--muted)">{{ fcDoneSub }}</p></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
+<div style="padding:18px 20px;border-radius:18px;background:var(--ok-soft);color:var(--ok-ink)"><div style="font-size:40px;font-weight:800;line-height:1">{{ fcKnownN }}</div><div style="font-weight:700;margin-top:6px">Ya lo sé</div></div>
+<div style="padding:18px 20px;border-radius:18px;background:var(--bad-soft);color:var(--bad-ink)"><div style="font-size:40px;font-weight:800;line-height:1">{{ fcLearnN }}</div><div style="font-weight:700;margin-top:6px">Sigo aprendiendo</div></div>
+</div>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<sc-if value="{{ fcHasLearn }}"><button onClick="{{ fcReviewLearn }}" style="padding:13px 20px;border-radius:14px;border:2px solid var(--primary);background:var(--primary);color:var(--on-primary);font-weight:800;font-size:15px;cursor:pointer" style-hover="background:var(--primary-strong)">{{ fcReviewLabel }}</button></sc-if>
+<button onClick="{{ fcRestart }}" style="padding:13px 20px;border-radius:14px;border:2px solid var(--border);background:var(--surface);font-weight:700;font-size:15px;cursor:pointer" style-hover="border-color:var(--primary)">Empezar de nuevo</button>
+<button onClick="{{ toSet }}" style="padding:13px 20px;border-radius:14px;border:2px solid var(--border);background:var(--surface);font-weight:700;font-size:15px;cursor:pointer" style-hover="border-color:var(--primary)">Volver al set</button>
+</div>
+</div>
+</sc-if>
+</section>
+</sc-if>
+
+<sc-if value="{{ isQuiz }}" hint-placeholder-val="{{ false }}">
+<section style="max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:center;gap:12px">
+<button onClick="{{ toSet }}" style="background:none;border:0;padding:6px 8px;margin-left:-8px;border-radius:8px;color:var(--muted);font-weight:700;cursor:pointer;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" style-hover="color:var(--text)">← {{ setTitle }}</button>
+<div style="flex:1"></div>
+<span style="padding:4px 12px;border-radius:999px;background:var(--primary-soft);color:var(--primary-strong);font-weight:800;font-size:13px">{{ qTitle }}</span>
+<sc-if value="{{ qActive }}"><span style="font-weight:800;font-variant-numeric:tabular-nums;font-size:16px">{{ qCounter }}</span></sc-if>
+</div>
+
+<sc-if value="{{ qSetup }}" hint-placeholder-val="{{ true }}">
+<div style="background:var(--surface);border-radius:24px;box-shadow:var(--shadow);padding:clamp(22px,5vw,40px);display:flex;flex-direction:column;gap:22px;animation:rp-pop .3s ease both">
+<div><h2 style="margin:0;font-size:clamp(24px,4vw,30px);font-weight:800;letter-spacing:-.02em">{{ qSetupTitle }}</h2><p style="margin:6px 0 0;color:var(--muted)">{{ qCountLabel }}</p></div>
+<sc-for list="{{ qGroups }}" as="g" hint-placeholder-count="1">
+<div style="display:flex;flex-direction:column;gap:10px">
+<span style="font-size:13px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">{{ g.title }}</span>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{ g.chips }}" as="ch"><button onClick="{{ ch.onClick }}" aria-pressed="{{ ch.pressed }}" style="padding:10px 16px;border-radius:12px;border:2px solid {{ ch.border }};background:{{ ch.bg }};color:{{ ch.color }};font-weight:700;font-size:15px;cursor:pointer;transition:all .15s">{{ ch.label }}</button></sc-for>
+</div>
+</div>
+</sc-for>
+<div style="padding:14px 16px;border-radius:14px;background:var(--surface2);font-weight:600;line-height:1.45">{{ qSetupHint }}</div>
+<sc-if value="{{ ttsMissing }}"><div style="padding:12px 16px;border-radius:12px;background:var(--bad-soft);color:var(--bad-ink);font-weight:600">Tu navegador no soporta síntesis de voz. Prueba con Chrome, Edge o Safari.</div></sc-if>
+<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+<button onClick="{{ qStart }}" style="padding:14px 28px;border-radius:14px;border:2px solid var(--primary);background:var(--primary);color:var(--on-primary);font-weight:800;font-size:16px;cursor:pointer" style-hover="background:var(--primary-strong)">Empezar</button>
+<span style="font-size:13px;color:var(--muted)">o pulsa <span style="padding:1px 7px;border-radius:6px;border:1px solid var(--border);border-bottom-width:2px;background:var(--surface);font:600 12px ui-monospace,Menlo,monospace">Enter</span></span>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ qActive }}" hint-placeholder-val="{{ false }}">
+<div style="height:6px;border-radius:99px;background:var(--surface2);overflow:hidden"><div style="height:100%;width:{{ qProgW }};background:var(--primary);border-radius:99px;transition:width .35s"></div></div>
+<sc-if value="{{ qRetryRound }}"><div style="align-self:flex-start;padding:4px 12px;border-radius:999px;background:var(--warn-soft);color:var(--warn-ink);font-weight:700;font-size:13px">Repaso de falladas</div></sc-if>
+<div style="background:var(--surface);border-radius:24px;box-shadow:var(--shadow);padding:18px 20px 26px;display:flex;flex-direction:column;gap:6px;min-height:220px;animation:{{ qAnim }}">
+<sc-if value="{{ isWriteMode }}">
+<div style="display:flex;align-items:center;gap:6px">
+<span style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">{{ qPromptLang }}</span>
+<div style="flex:1"></div>
+<button onClick="{{ qSpeakPrompt }}" aria-label="Escuchar" style="width:42px;height:42px;border-radius:50%;border:0;background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer" style-hover="background:var(--surface2);color:var(--primary)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"></path><path d="M16.5 8.5a5 5 0 0 1 0 7"></path><path d="M19 6a8.5 8.5 0 0 1 0 12"></path></svg></button>
+</div>
+<div style="flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:12px 8px;font-size:clamp(26px,4.6vw,40px);font-weight:600;line-height:1.25;text-wrap:balance;overflow-wrap:anywhere">{{ qPrompt }}</div>
+</sc-if>
+<sc-if value="{{ isListenMode }}">
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:12px 0">
+<span style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">{{ qHearLabel }}</span>
+<button onClick="{{ qPlay }}" aria-label="Reproducir audio" style="width:96px;height:96px;border-radius:50%;border:0;background:var(--primary);color:var(--on-primary);display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 24px oklch(0.55 0.2 277 / .35);transition:transform .15s" style-hover="transform:scale(1.05)" style-active="transform:scale(.96)"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"></path><path d="M16.5 8.5a5 5 0 0 1 0 7"></path><path d="M19 6a8.5 8.5 0 0 1 0 12"></path></svg></button>
+<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+<button onClick="{{ qPlay }}" style="display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;border:2px solid var(--border);background:var(--surface);font-weight:700;font-size:14px;cursor:pointer" style-hover="border-color:var(--primary)">Repetir <span style="padding:0 6px;border-radius:5px;border:1px solid var(--border);font:600 11px ui-monospace,Menlo,monospace">R</span></button>
+<button onClick="{{ qSlow }}" style="display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;border:2px solid var(--border);background:var(--surface);font-weight:700;font-size:14px;cursor:pointer" style-hover="border-color:var(--primary)">Lento 0.7× <span style="padding:0 6px;border-radius:5px;border:1px solid var(--border);font:600 11px ui-monospace,Menlo,monospace">⇧R</span></button>
+</div>
+<sc-if value="{{ qIsFeedback }}">
+<div style="text-align:center;animation:rp-pop .25s ease both"><div style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Se escuchó</div><div style="font-size:clamp(22px,4vw,32px);font-weight:700;margin-top:4px;overflow-wrap:anywhere">{{ qPrompt }}</div></div>
+</sc-if>
+</div>
+</sc-if>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-size:13px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">{{ qAnswerLabel }}</span>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<input ref="{{ answerRef }}" value="{{ qInput }}" onChange="{{ onQInput }}" readOnly="{{ qReadOnly }}" placeholder="Escribe tu respuesta" autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck="false" style="flex:1 1 260px;min-width:0;padding:15px 18px;border-radius:14px;border:2px solid var(--border);background:var(--surface);font-size:19px;font-weight:600;outline:none;transition:border-color .15s" style-focus="border-color:var(--primary)">
+<sc-if value="{{ qIsAnswer }}">
+<button onClick="{{ qCheck }}" style="padding:14px 22px;border-radius:14px;border:2px solid var(--primary);background:var(--primary);color:var(--on-primary);font-weight:800;font-size:16px;cursor:pointer" style-hover="background:var(--primary-strong)">Comprobar</button>
+</sc-if>
+</div>
+<sc-if value="{{ qIsAnswer }}">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted)">
+<span><span style="padding:1px 7px;border-radius:6px;border:1px solid var(--border);border-bottom-width:2px;background:var(--surface);font:600 12px ui-monospace,Menlo,monospace">Enter</span> comprobar{{ qListenHint }}</span>
+<button onClick="{{ qSkip }}" style="background:none;border:0;padding:4px 6px;border-radius:6px;color:var(--primary);font-weight:700;cursor:pointer">No lo sé</button>
+</div>
+</sc-if>
+</div>
+
+<sc-if value="{{ qIsFeedback }}">
+<div style="border-radius:20px;border:2px solid {{ fbBorder }};background:{{ fbBg }};padding:18px 20px;display:flex;flex-direction:column;gap:14px;animation:rp-pop .25s ease both">
+<div style="display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;color:{{ fbInk }}"><span style="width:28px;height:28px;border-radius:50%;background:{{ fbBorder }};color:var(--surface);display:grid;place-items:center;font-size:15px;flex:none">{{ fbGlyph }}</span>{{ fbTitle }}</div>
+<sc-if value="{{ fbAlmost }}">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+<div><div style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Respuesta correcta</div><div style="font-size:20px;font-weight:700;white-space:pre-wrap;overflow-wrap:anywhere"><sc-for list="{{ fbAltSegs }}" as="g"><span style="background:{{ g.bg }};color:{{ g.color }};border-radius:4px;text-decoration:{{ g.deco }}">{{ g.t }}</span></sc-for></div></div>
+<div><div style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Tu respuesta</div><div style="font-size:20px;font-weight:600;white-space:pre-wrap;overflow-wrap:anywhere"><sc-for list="{{ fbGivenSegs }}" as="g"><span style="background:{{ g.bg }};color:{{ g.color }};border-radius:4px;text-decoration:{{ g.deco }}">{{ g.t }}</span></sc-for></div></div>
+</div>
+</sc-if>
+<sc-if value="{{ fbWrong }}">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+<div><div style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Tu respuesta</div><div style="font-size:20px;font-weight:600;color:var(--bad-ink);overflow-wrap:anywhere">{{ fbGiven }}</div></div>
+<div><div style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Respuesta correcta</div><div style="font-size:20px;font-weight:700;color:var(--ok-ink);overflow-wrap:anywhere">{{ fbCorrectText }}</div></div>
+</div>
+<div style="font-size:13px;color:var(--muted);font-weight:600">Volverá a aparecer al final de la ronda.</div>
+</sc-if>
+<sc-if value="{{ fbShowCorrect }}">
+<div style="font-size:20px;font-weight:700;overflow-wrap:anywhere">{{ fbCorrectText }}</div>
+</sc-if>
+<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+<sc-if value="{{ fbWrong }}"><button onClick="{{ qOverride }}" style="padding:11px 18px;border-radius:12px;border:2px solid var(--border);background:var(--surface);font-weight:700;font-size:15px;cursor:pointer" style-hover="border-color:var(--primary)">Yo tenía razón</button></sc-if>
+<div style="flex:1"></div>
+<button onClick="{{ qNext }}" style="display:flex;align-items:center;gap:10px;padding:11px 20px;border-radius:12px;border:2px solid var(--primary);background:var(--primary);color:var(--on-primary);font-weight:800;font-size:15px;cursor:pointer" style-hover="background:var(--primary-strong)">Continuar <span style="padding:0 6px;border-radius:5px;border:1px solid currentColor;font:600 11px ui-monospace,Menlo,monospace;opacity:.8">Enter</span></button>
+</div>
+</div>
+</sc-if>
+</sc-if>
+
+<sc-if value="{{ qDone }}" hint-placeholder-val="{{ false }}">
+<div style="background:var(--surface);border-radius:26px;box-shadow:var(--shadow);padding:clamp(24px,5vw,44px);display:flex;flex-direction:column;gap:24px;animation:rp-pop .35s ease both">
+<div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+<div style="width:136px;height:136px;border-radius:50%;background:conic-gradient(var(--ok) {{ qPctDeg }}, var(--surface2) 0);display:grid;place-items:center;flex:none"><div style="width:106px;height:106px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font-size:30px;font-weight:800">{{ qPct }}</div></div>
+<div><h2 style="margin:0;font-size:clamp(24px,4vw,32px);font-weight:800;letter-spacing:-.02em">{{ qDoneTitle }}</h2><p style="margin:6px 0 0;color:var(--muted);font-weight:600">{{ qScoreLine }}</p></div>
+</div>
+<sc-if value="{{ qHasErrors }}">
+<div style="display:flex;flex-direction:column;gap:8px">
+<h3 style="margin:0;font-size:17px;font-weight:800">Errores ({{ qErrCount }})</h3>
+<sc-for list="{{ qErrors }}" as="e">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:4px 16px;padding:12px 16px;border-radius:14px;background:var(--surface2)">
+<div style="font-weight:700;overflow-wrap:anywhere">{{ e.prompt }}</div>
+<div style="color:var(--ok-ink);font-weight:700;overflow-wrap:anywhere">{{ e.answer }}</div>
+<div style="color:var(--bad-ink);overflow-wrap:anywhere">Escribiste: {{ e.given }}</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ qNoErrors }}"><div style="padding:14px 16px;border-radius:14px;background:var(--ok-soft);color:var(--ok-ink);font-weight:700">Sin errores en esta ronda.</div></sc-if>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<sc-if value="{{ qHasErrors }}"><button onClick="{{ qRetryErrors }}" style="padding:13px 20px;border-radius:14px;border:2px solid var(--primary);background:var(--primary);color:var(--on-primary);font-weight:800;font-size:15px;cursor:pointer" style-hover="background:var(--primary-strong)">Repasar errores</button></sc-if>
+<button onClick="{{ qRestart }}" style="padding:13px 20px;border-radius:14px;border:2px solid var(--border);background:var(--surface);font-weight:700;font-size:15px;cursor:pointer" style-hover="border-color:var(--primary)">Repetir todo</button>
+<button onClick="{{ toSet }}" style="padding:13px 20px;border-radius:14px;border:2px solid var(--border);background:var(--surface);font-weight:700;font-size:15px;cursor:pointer" style-hover="border-color:var(--primary)">Volver al set</button>
+</div>
+</div>
+</sc-if>
+</section>
+</sc-if>
+
+</main>
+<sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:50;padding:12px 20px;border-radius:14px;background:var(--text);color:var(--bg);font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:rp-pop .2s ease both;max-width:calc(100vw - 32px)">{{ toast }}</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  static LANGS = [['de-DE','Alemán'],['es-MX','Español (México)'],['es-ES','Español (España)'],['en-US','Inglés (EE. UU.)'],['en-GB','Inglés (Reino Unido)'],['fr-FR','Francés'],['it-IT','Italiano'],['pt-BR','Portugués (Brasil)'],['nl-NL','Neerlandés'],['ja-JP','Japonés'],['zh-CN','Chino (mandarín)'],['ko-KR','Coreano']];
+  static SAMPLE = '@titulo: Vocabulario Kapitel 5\n@idioma_termino: de-DE\n@idioma_definicion: es-MX\nder Bahnhof | la estación de tren\ndie Haltestelle | la parada\numsteigen | transbordar / cambiar de tren\n# comentario ignorado\npünktlich | puntual\ndie Abfahrt la salida';
+
+  state = this.loadState();
+  answerRef = React.createRef();
+  fileRef = React.createRef();
+
+  // ---------- core logic ----------
+  static uid(){ return Math.random().toString(36).slice(2, 10); }
+  static shuffle(a){ a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  static langName(code){ const f = Component.LANGS.find(l => l[0] === code); return f ? f[1] : (code || '—'); }
+  static norm(s){ return String(s == null ? '' : s).toLowerCase().replace(/\s+/g, ' ').trim().replace(/^[¡¿]+/, '').replace(/[.,!?]+$/, '').trim(); }
+  static expand(s){ return s.replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss'); }
+  static strip(s){ return s.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
+  static adjSet(){
+    if (Component._adj) return Component._adj;
+    const set = new Set(); const add = (a, b) => { set.add(a + b); set.add(b + a); };
+    [['qwertyuiop', 'asdfghjkl', 'zxcvbnm'], ['qwertzuiopü', 'asdfghjklöä', 'yxcvbnm']].forEach(rows => rows.forEach((r, ri) => {
+      for (let i = 0; i < r.length; i++) {
+        if (i + 1 < r.length) add(r[i], r[i + 1]);
+        const n = rows[ri + 1]; if (n) [i - 1, i].forEach(k => { if (k >= 0 && k < n.length) add(r[i], n[k]); });
+      }
+    }));
+    add('z', 'y');
+    return (Component._adj = set);
+  }
+  // Weighted Damerau-Levenshtein (OSA). a = answer, b = correct.
+  static dl(a, b, eq){
+    eq = eq || ((x, y) => x === y);
+    const adj = Component.adjSet(), n = a.length, m = b.length;
+    const d = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+    const extra = i => (a[i - 1] === ' ' || (i > 1 && a[i - 1] === a[i - 2])) ? 0.5 : 1;
+    const miss = j => b[j - 1] === ' ' ? 0.5 : 1;
+    const sub = (i, j) => eq(a[i - 1], b[j - 1]) ? 0 : (adj.has(a[i - 1].toLowerCase() + b[j - 1].toLowerCase()) ? 0.5 : 1);
+    const trans = (i, j) => i > 1 && j > 1 && eq(a[i - 1], b[j - 2]) && eq(a[i - 2], b[j - 1]) && !eq(a[i - 1], b[j - 1]);
+    for (let i = 1; i <= n; i++) d[i][0] = d[i - 1][0] + extra(i);
+    for (let j = 1; j <= m; j++) d[0][j] = d[0][j - 1] + miss(j);
+    for (let i = 1; i <= n; i++) for (let j = 1; j <= m; j++) {
+      let v = Math.min(d[i - 1][j] + extra(i), d[i][j - 1] + miss(j), d[i - 1][j - 1] + sub(i, j));
+      if (trans(i, j)) v = Math.min(v, d[i - 2][j - 2] + 0.5);
+      d[i][j] = v;
+    }
+    return { cost: d[n][m], d, extra, miss, sub, trans };
+  }
+  static variants(s, ignore){ const e = Component.expand(s); const out = [e]; if (ignore) { out.push(Component.strip(e)); out.push(Component.strip(s).replace(/ß/g, 'ss')); } return out; }
+  static evaluate(resp, correct, opts){
+    opts = opts || {};
+    const full = String(correct || '').trim();
+    const alts = [...new Set([full, ...full.split('/').map(x => x.trim()).filter(Boolean)])];
+    const rank = { correct: 0, almost: 1, wrong: 2 };
+    let best = { result: 'wrong', alt: full, cost: Infinity, over: Infinity };
+    const a = Component.norm(resp);
+    if (!a) return best;
+    for (const alt of alts) {
+      const c = Component.norm(alt); if (!c) continue;
+      const thr = c.length <= 4 ? 0.5 : c.length <= 10 ? 1 : 2;
+      const av = Component.variants(a, opts.ignoreAccents), cv = Component.variants(c, opts.ignoreAccents);
+      let cost = Infinity;
+      for (let k = 0; k < av.length; k++) { if (av[k] === cv[k]) { cost = 0; break; } cost = Math.min(cost, Component.dl(av[k], cv[k]).cost); }
+      const result = cost === 0 ? 'correct' : cost <= thr ? 'almost' : 'wrong';
+      const cand = { result, alt, cost, over: cost - thr };
+      if (rank[result] < rank[best.result] || (rank[result] === rank[best.result] && cand.over < best.over)) best = cand;
+    }
+    return best;
+  }
+  static checkAnswer(resp, correct, opts){ return Component.evaluate(resp, correct, opts).result; }
+  static diffSegs(resp, alt, ignore){
+    const aD = String(resp || '').replace(/\s+/g, ' ').trim().replace(/[.,!?]+$/, '').trim();
+    const bD = String(alt || '').trim();
+    const a = aD.toLowerCase(), b = bD.toLowerCase();
+    const eq = (x, y) => x === y || (ignore && Component.strip(x) === Component.strip(y));
+    const r = Component.dl(a, b, eq), d = r.d, close = (x, y) => Math.abs(x - y) < 1e-9;
+    const mA = new Array(a.length).fill(false), mB = new Array(b.length).fill(false);
+    let i = a.length, j = b.length;
+    while (i > 0 || j > 0) {
+      const cur = d[i][j];
+      if (i > 0 && j > 0 && close(cur, d[i - 1][j - 1] + r.sub(i, j))) { if (r.sub(i, j) > 0) { mA[i - 1] = mB[j - 1] = true; } i--; j--; }
+      else if (r.trans(i, j) && close(cur, d[i - 2][j - 2] + 0.5)) { mA[i - 1] = mA[i - 2] = mB[j - 1] = mB[j - 2] = true; i -= 2; j -= 2; }
+      else if (i > 0 && close(cur, d[i - 1][j] + r.extra(i))) { mA[i - 1] = true; i--; }
+      else { mB[j - 1] = true; j--; }
+    }
+    const segs = (str, marks, kind) => {
+      const out = []; let buf = '', st = null;
+      const push = () => { if (buf) out.push(st ? (kind === 'b' ? { t: buf, bg: 'var(--warn-soft)', color: 'var(--warn-ink)', deco: 'underline' } : { t: buf, bg: 'var(--bad-soft)', color: 'var(--bad-ink)', deco: 'line-through' }) : { t: buf, bg: 'transparent', color: 'inherit', deco: 'none' }); };
+      for (let k = 0; k < str.length; k++) { if (marks[k] !== st) { push(); buf = ''; st = marks[k]; } buf += str[k]; }
+      push(); return out;
+    };
+    return { b: segs(bD, mB, 'b'), a: segs(aD, mA, 'a') };
+  }
+  static parseImport(text){
+    const meta = {}, rows = [];
+    String(text || '').split(/\r?\n/).forEach((raw, k) => {
+      const line = raw.trim();
+      if (!line || line.startsWith('#')) return;
+      const m = line.match(/^@\s*([^:]+?)\s*:\s*(.*)$/);
+      if (m) {
+        const key = m[1].toLowerCase(), v = m[2].trim();
+        if (/t[ií]tul|title/.test(key)) meta.title = v;
+        else if (/t[eé]rmin|term/.test(key)) meta.termLang = v;
+        else if (/defin|def/.test(key)) meta.defLang = v;
+        return;
+      }
+      let term = null, def = null;
+      const ti = line.indexOf('\t'), pi = line.indexOf('|');
+      if (ti > -1) { term = line.slice(0, ti); def = line.slice(ti + 1).replace(/\t+/g, ' '); }
+      else if (pi > -1) { term = line.slice(0, pi); def = line.slice(pi + 1); }
+      term = term == null ? '' : term.trim(); def = def == null ? '' : def.trim();
+      rows.push({ n: k + 1, raw: line, term, def, ok: !!(term && def) });
+    });
+    return { meta, rows };
+  }
+  static seed(){
+    const mk = (t, d, k) => ({ id: Component.uid(), term: t, def: d, starred: false, known: !!k });
+    return [
+      { id: Component.uid(), title: 'Vocabulario Kapitel 5', termLang: 'de-DE', defLang: 'es-MX', ignoreAccents: false, updated: Date.now(), cards: [
+        mk('der Bahnhof', 'la estación de tren', 1), mk('die Haltestelle', 'la parada', 1), mk('umsteigen', 'transbordar / cambiar de tren'), mk('pünktlich', 'puntual', 1),
+        mk('die Verspätung', 'el retraso'), mk('die Fahrkarte', 'el boleto'), mk('abfahren', 'salir / partir'), mk('ankommen', 'llegar'),
+        mk('das Gleis', 'el andén / la vía'), mk('der Zug', 'el tren', 1), mk('die Straße', 'la calle'), mk('müde', 'cansado') ] },
+      { id: Component.uid(), title: 'Phrasal verbs básicos', termLang: 'en-US', defLang: 'es-MX', ignoreAccents: true, updated: Date.now(), cards: [
+        mk('give up', 'rendirse'), mk('look for', 'buscar', 1), mk('run out of', 'quedarse sin'), mk('turn on', 'encender / prender'),
+        mk('turn off', 'apagar', 1), mk('get up', 'levantarse'), mk('find out', 'descubrir / enterarse'), mk('take off', 'despegar / quitarse') ] }
+    ];
+  }
+
+  // ---------- state & persistence ----------
+  loadState(){
+    let d = null; try { d = JSON.parse(localStorage.getItem('repaso.v1')); } catch (e) {}
+    const sets = d && Array.isArray(d.sets) ? d.sets : Component.seed();
+    const nav = (d && d.nav) || {};
+    let view = nav.view === 'set' && sets.find(s => s.id === nav.setId) ? 'set' : 'home';
+    return { sets, dark: !!(d && d.dark), view, setId: nav.setId || null, draft: null,
+      imp: { text: '', title: '', termLang: 'de-DE', defLang: 'es-MX' }, fc: null, quiz: null, toast: null, confirmDel: false };
+  }
+  persist(){
+    const s = this.state, v = ['home', 'set'].includes(s.view) ? s.view : (s.setId ? 'set' : 'home');
+    try { localStorage.setItem('repaso.v1', JSON.stringify({ sets: s.sets, dark: s.dark, nav: { view: v, setId: s.setId } })); } catch (e) {}
+  }
+  componentDidMount(){
+    document.body.classList.toggle('dark', this.state.dark);
+    window.addEventListener('keydown', this.onKey);
+    window.checkAnswer = (r, c, o) => Component.checkAnswer(r, c, o);
+    if ('speechSynthesis' in window) { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices(); }
+    this.persist();
+  }
+  componentWillUnmount(){ window.removeEventListener('keydown', this.onKey); clearTimeout(this.autoT); clearTimeout(this.toastT); }
+  componentDidUpdate(pp, ps){
+    const s = this.state;
+    if (ps.dark !== s.dark) document.body.classList.toggle('dark', s.dark);
+    if (ps.sets !== s.sets || ps.dark !== s.dark || ps.view !== s.view || ps.setId !== s.setId) this.persist();
+    if (ps.view !== s.view) window.scrollTo({ top: 0 });
+  }
+  cur(){ return this.state.sets.find(s => s.id === this.state.setId); }
+  flash(msg){ this.setState({ toast: msg }); clearTimeout(this.toastT); this.toastT = setTimeout(() => this.setState({ toast: null }), 2400); }
+  updateSet(id, fn){ this.setState(p => ({ sets: p.sets.map(x => x.id === id ? { ...fn(x), updated: Date.now() } : x) })); }
+  updateCard(setId, cardId, patch){ this.updateSet(setId, x => ({ ...x, cards: x.cards.map(c => c.id === cardId ? { ...c, ...patch } : c) })); }
+  speak(text, lang, rate){
+    if (!('speechSynthesis' in window)) { this.flash('Tu navegador no soporta audio'); return; }
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(String(text || '')); u.lang = lang || 'es-MX'; u.rate = rate || 1;
+    const vs = speechSynthesis.getVoices();
+    const v = vs.find(x => x.lang === u.lang) || vs.find(x => (x.lang || '').replace('_', '-').toLowerCase() === u.lang.toLowerCase()) || vs.find(x => (x.lang || '').slice(0, 2) === u.lang.slice(0, 2));
+    if (v) u.voice = v;
+    speechSynthesis.speak(u);
+  }
+  chip(label, active, onClick){
+    return { label, onClick, pressed: String(!!active), bg: active ? 'var(--primary-soft)' : 'var(--surface)', color: active ? 'var(--primary-strong)' : 'var(--text)', border: active ? 'var(--primary)' : 'var(--border)' };
+  }
+  langOpts(extra){
+    const list = Component.LANGS.map(l => ({ code: l[0], name: l[1] }));
+    (extra || []).forEach(c => { if (c && !list.find(l => l.code === c)) list.push({ code: c, name: c }); });
+    return list;
+  }
+
+  // ---------- navigation ----------
+  goHome = () => { if ('speechSynthesis' in window) speechSynthesis.cancel(); this.setState({ view: 'home', fc: null, quiz: null, confirmDel: false }); };
+  openSet = (id) => this.setState({ view: 'set', setId: id, confirmDel: false });
+  toSet = () => { if ('speechSynthesis' in window) speechSynthesis.cancel(); clearTimeout(this.autoT); this.setState({ view: 'set', fc: null, quiz: null }); };
+  openImport = () => this.setState({ view: 'import' });
+
+  // ---------- set actions ----------
+  exportSet = () => {
+    const s = this.cur(); if (!s) return;
+    const txt = ['@titulo: ' + s.title, '@idioma_termino: ' + s.termLang, '@idioma_definicion: ' + s.defLang, '', ...s.cards.map(c => c.term + ' | ' + c.def)].join('\n') + '\n';
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([txt], { type: 'text/plain;charset=utf-8' }));
+    a.download = (s.title.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w]+/g, '-').replace(/^-|-$/g, '').toLowerCase() || 'set') + '.txt';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+    this.flash('Set exportado como .txt');
+  };
+  delSet = () => {
+    const s = this.cur(); if (!s) return;
+    if (!this.state.confirmDel) { this.setState({ confirmDel: true }); clearTimeout(this.delT); this.delT = setTimeout(() => this.setState({ confirmDel: false }), 3000); return; }
+    this.setState(p => ({ sets: p.sets.filter(x => x.id !== s.id), view: 'home', setId: null, confirmDel: false }));
+    this.flash('Set eliminado');
+  };
+
+  // ---------- edit ----------
+  newRow(){ return { id: Component.uid(), term: '', def: '', starred: false, known: false }; }
+  newSet = () => this.setState({ view: 'edit', draft: { id: null, title: '', termLang: 'de-DE', defLang: 'es-MX', ignoreAccents: false, rows: [this.newRow(), this.newRow(), this.newRow()] } });
+  editSet = () => { const s = this.cur(); if (!s) return; this.setState({ view: 'edit', draft: { id: s.id, title: s.title, termLang: s.termLang, defLang: s.defLang, ignoreAccents: !!s.ignoreAccents, rows: s.cards.map(c => ({ ...c })) } }); };
+  draftSet(patch){ this.setState(p => ({ draft: { ...p.draft, ...patch } })); }
+  draftRow(id, patch){ this.setState(p => ({ draft: { ...p.draft, rows: p.draft.rows.map(r => r.id === id ? { ...r, ...patch } : r) } })); }
+  moveRow(i, dir){ this.setState(p => { const rows = p.draft.rows.slice(), j = i + dir; if (j < 0 || j >= rows.length) return null; [rows[i], rows[j]] = [rows[j], rows[i]]; return { draft: { ...p.draft, rows } }; }); }
+  delRow(id){ this.setState(p => ({ draft: { ...p.draft, rows: p.draft.rows.filter(r => r.id !== id) } })); }
+  addRow = () => { const r = this.newRow(); this.setState(p => ({ draft: { ...p.draft, rows: [...p.draft.rows, r] } }), () => { const el = document.querySelector('[data-row="' + r.id + '"]'); if (el) el.focus(); }); };
+  cancelDraft = () => { const d = this.state.draft; this.setState({ view: d && d.id ? 'set' : 'home', draft: null }); };
+  saveDraft = () => {
+    const d = this.state.draft; if (!d) return;
+    const title = d.title.trim();
+    if (!title) return this.flash('Ponle un título al set');
+    const rows = d.rows.map(r => ({ ...r, term: r.term.trim(), def: r.def.trim() })).filter(r => r.term || r.def);
+    const half = rows.findIndex(r => !r.term || !r.def);
+    if (half > -1) return this.flash('Completa término y definición en la tarjeta ' + (half + 1));
+    if (!rows.length) return this.flash('Añade al menos una tarjeta');
+    const base = { title, termLang: d.termLang, defLang: d.defLang, ignoreAccents: d.ignoreAccents, cards: rows, updated: Date.now() };
+    if (d.id) { this.setState(p => ({ sets: p.sets.map(x => x.id === d.id ? { ...x, ...base } : x), view: 'set', setId: d.id, draft: null })); }
+    else { const id = Component.uid(); this.setState(p => ({ sets: [{ id, ...base }, ...p.sets], view: 'set', setId: id, draft: null })); }
+    this.flash('Set guardado');
+  };
+
+  // ---------- import ----------
+  impSet(patch){ this.setState(p => ({ imp: { ...p.imp, ...patch } })); }
+  doImport = () => {
+    const imp = this.state.imp, p = Component.parseImport(imp.text), valid = p.rows.filter(r => r.ok);
+    const title = (p.meta.title || imp.title || '').trim();
+    if (!valid.length) return this.flash('No hay tarjetas válidas para importar');
+    if (!title) return this.flash('Escribe un título para el set');
+    const set = { id: Component.uid(), title, termLang: p.meta.termLang || imp.termLang, defLang: p.meta.defLang || imp.defLang, ignoreAccents: false, updated: Date.now(),
+      cards: valid.map(r => ({ id: Component.uid(), term: r.term, def: r.def, starred: false, known: false })) };
+    this.setState(s => ({ sets: [set, ...s.sets], view: 'set', setId: set.id, imp: { text: '', title: '', termLang: 'de-DE', defLang: 'es-MX' } }));
+    this.flash('Importadas ' + valid.length + ' tarjetas');
+  };
+
+  // ---------- flashcards ----------
+  buildDeck(set, opt){ let cs = set.cards; if (opt.starredOnly) cs = cs.filter(c => c.starred); let ids = cs.map(c => c.id); if (opt.shuffle) ids = Component.shuffle(ids); return ids; }
+  startCards = () => {
+    const set = this.cur(); if (!set || !set.cards.length) return this.flash('Este set no tiene tarjetas');
+    const opt = { shuffle: false, startSide: 'term', starredOnly: false, ...(this.fcPrefs || {}) };
+    let ids = this.buildDeck(set, opt); if (!ids.length) { opt.starredOnly = false; ids = this.buildDeck(set, opt); }
+    this.setState({ view: 'cards', fc: { ...opt, ids, index: 0, flipped: false, results: {}, done: false, anim: 0, instant: false } });
+  };
+  fcSet(patch){ this.setState(p => ({ fc: { ...p.fc, ...patch } })); if (patch.instant) { clearTimeout(this.instT); this.instT = setTimeout(() => this.setState(p => p.fc ? { fc: { ...p.fc, instant: false } } : null), 60); } }
+  fcRebuild(optPatch, onlyIds){
+    const set = this.cur(), fc = this.state.fc; const opt = { shuffle: fc.shuffle, startSide: fc.startSide, starredOnly: fc.starredOnly, ...optPatch };
+    let ids = onlyIds || this.buildDeck(set, opt);
+    if (onlyIds && opt.shuffle) ids = Component.shuffle(ids);
+    if (!ids.length) return this.flash('No hay tarjetas marcadas con estrella');
+    this.fcPrefs = { shuffle: opt.shuffle, startSide: opt.startSide, starredOnly: opt.starredOnly };
+    this.fcSet({ ...opt, ids, index: 0, flipped: false, results: {}, done: false, anim: fc.anim + 1, instant: true });
+  };
+  flip = () => { const fc = this.state.fc; if (fc && !fc.done) this.fcSet({ flipped: !fc.flipped, instant: false }); };
+  fcGo(delta, extra){
+    const fc = this.state.fc; if (!fc || fc.done) return;
+    const i = fc.index + delta; if (i < 0) return;
+    if (i >= fc.ids.length) return this.fcSet({ ...extra, done: true });
+    this.fcSet({ ...extra, index: i, flipped: false, instant: true, anim: fc.anim + 1 });
+  }
+  fcMark(kind){
+    const fc = this.state.fc; if (!fc || fc.done) return;
+    const id = fc.ids[fc.index];
+    this.updateCard(this.state.setId, id, { known: kind === 'know' });
+    this.fcGo(1, { results: { ...fc.results, [id]: kind } });
+  }
+  fcStar(){ const fc = this.state.fc; if (!fc) return; const set = this.cur(); const c = set.cards.find(x => x.id === fc.ids[fc.index]); if (c) this.updateCard(set.id, c.id, { starred: !c.starred }); }
+
+  // ---------- write / listen ----------
+  startQuiz(mode){ const set = this.cur(); if (!set || !set.cards.length) return this.flash('Este set no tiene tarjetas'); this.setState({ view: 'quiz', quiz: { mode, phase: 'setup', showSide: 'def', hearSide: 'term', writeWhat: 'same', anim: 0, ...(this.qPrefs || {}) } }); }
+  qSetOpt(patch){ this.qPrefs = { ...(this.qPrefs || {}), ...patch }; this.setState(p => ({ quiz: { ...p.quiz, ...patch } })); }
+  sides(q){ if (q.mode === 'write') return { prompt: q.showSide, answer: q.showSide === 'term' ? 'def' : 'term' }; const other = q.hearSide === 'term' ? 'def' : 'term'; return { prompt: q.hearSide, answer: q.writeWhat === 'same' ? q.hearSide : other }; }
+  qCard(){ const q = this.state.quiz, set = this.cur(); return q && set && q.queue ? set.cards.find(c => c.id === q.queue[q.pos]) : null; }
+  quizBegin(ids){
+    const set = this.cur(), q = this.state.quiz; if (!set) return;
+    const valid = (ids || set.cards.map(c => c.id)).filter(id => set.cards.find(c => c.id === id));
+    if (!valid.length) return;
+    const queue = Component.shuffle(valid);
+    clearTimeout(this.autoT);
+    this.setState({ quiz: { ...q, phase: 'answer', queue, pos: 0, total: queue.length, first: {}, errors: {}, input: '', fb: null, anim: (q.anim || 0) + 1 } }, () => this.afterQuestion());
+  }
+  afterQuestion(){
+    setTimeout(() => { const el = this.answerRef.current; if (el) el.focus(); }, 30);
+    const q = this.state.quiz; if (q && q.mode === 'listen') setTimeout(() => this.qPlay(1), 250);
+  }
+  qPlay(rate){
+    const q = this.state.quiz, set = this.cur(), c = this.qCard(); if (!q || !c) return;
+    const side = this.sides(q).prompt; this.speak(c[side], side === 'term' ? set.termLang : set.defLang, rate);
+    if (q.phase === 'answer') { const el = this.answerRef.current; if (el) el.focus(); }
+  }
+  qCheck(skip){
+    const q = this.state.quiz; if (!q || q.phase !== 'answer') return;
+    const set = this.cur(), c = this.qCard(); if (!c) return;
+    const sd = this.sides(q), correct = c[sd.answer], input = skip ? '' : q.input;
+    const ev = Component.evaluate(input, correct, { ignoreAccents: !!set.ignoreAccents });
+    const isFirst = !(c.id in q.first), first = { ...q.first }, errors = { ...q.errors };
+    let queue = q.queue;
+    if (isFirst) first[c.id] = ev.result !== 'wrong';
+    if (ev.result === 'wrong') { queue = [...queue, c.id]; errors[c.id] = { given: input.trim() }; }
+    this.updateCard(set.id, c.id, { known: ev.result !== 'wrong' });
+    const fb = { result: ev.result, given: input.trim(), correct, isFirst, segs: ev.result === 'almost' ? Component.diffSegs(input, ev.alt, !!set.ignoreAccents) : null };
+    this.setState({ quiz: { ...q, input, phase: 'feedback', queue, first, errors, fb } });
+    clearTimeout(this.autoT);
+    if (ev.result === 'correct') this.autoT = setTimeout(() => { const cq = this.state.quiz; if (cq && cq.fb === fb && cq.phase === 'feedback') this.qNext(); }, 1100);
+  }
+  qOverride(){
+    const q = this.state.quiz; if (!q || !q.fb || q.fb.result !== 'wrong') return;
+    const id = q.queue[q.pos], queue = q.queue.slice(), li = queue.lastIndexOf(id);
+    if (li > q.pos) queue.splice(li, 1);
+    const first = { ...q.first }, errors = { ...q.errors };
+    if (q.fb.isFirst) { first[id] = true; delete errors[id]; }
+    this.updateCard(this.state.setId, id, { known: true });
+    this.setState({ quiz: { ...q, queue, first, errors, fb: { ...q.fb, result: 'override' } } });
+  }
+  qNext(){
+    clearTimeout(this.autoT);
+    const q = this.state.quiz; if (!q || q.phase !== 'feedback') return;
+    const pos = q.pos + 1;
+    if (pos >= q.queue.length) { if ('speechSynthesis' in window) speechSynthesis.cancel(); return this.setState({ quiz: { ...q, phase: 'done', fb: null } }); }
+    this.setState({ quiz: { ...q, pos, phase: 'answer', input: '', fb: null, anim: q.anim + 1 } }, () => this.afterQuestion());
+  }
+
+  // ---------- keyboard ----------
+  onKey = (e) => {
+    const s = this.state, t = e.target || {}, tag = (t.tagName || '').toLowerCase();
+    const typing = (tag === 'input' && !t.readOnly) || tag === 'textarea' || tag === 'select';
+    const onBtn = tag === 'button';
+    if (e.key === 'Escape') {
+      if (s.view === 'cards' || s.view === 'quiz') this.toSet();
+      else if (s.view === 'edit') this.cancelDraft();
+      else if (s.view === 'import' || s.view === 'set') this.goHome();
+      return;
+    }
+    if (e.metaKey || e.altKey) return;
+    if (s.view === 'cards' && s.fc && !s.fc.done) {
+      if (typing || e.ctrlKey) return;
+      if (onBtn && (e.key === ' ' || e.key === 'Enter')) return;
+      const k = e.key.toLowerCase();
+      if (e.key === ' ') { e.preventDefault(); this.flip(); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); this.fcGo(1); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); this.fcGo(-1); }
+      else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); this.flip(); }
+      else if (k === '1') this.fcMark('learn');
+      else if (k === '2') this.fcMark('know');
+      else if (k === 's') this.fcStar();
+      return;
+    }
+    if (s.view === 'quiz' && s.quiz) {
+      const q = s.quiz;
+      if (e.key === 'Enter' && !onBtn) {
+        if (q.phase === 'answer') { e.preventDefault(); this.qCheck(); }
+        else if (q.phase === 'feedback') { e.preventDefault(); this.qNext(); }
+        else if (q.phase === 'setup' && !typing) { e.preventDefault(); this.quizBegin(); }
+        return;
+      }
+      if (q.mode === 'listen' && (q.phase === 'answer' || q.phase === 'feedback')) {
+        if (e.ctrlKey && e.key === ' ') { e.preventDefault(); this.qPlay(1); }
+        else if (!typing && !e.ctrlKey && e.key.toLowerCase() === 'r') { e.preventDefault(); this.qPlay(e.shiftKey ? 0.7 : 1); }
+      }
+    }
+  };
+
+  // ---------- render ----------
+  renderVals(){
+    const s = this.state, L = Component.langName, set = this.cur();
+    let view = s.view;
+    if (['set', 'cards', 'quiz'].includes(view) && !set) view = 'home';
+    if (view === 'edit' && !s.draft) view = 'home';
+    const plural = (n, a, b) => n + ' ' + (n === 1 ? a : b);
+    const v = {
+      darkLabel: s.dark ? 'Modo claro' : 'Modo oscuro', toggleDark: () => this.setState(p => ({ dark: !p.dark })),
+      goHome: this.goHome, toSet: this.toSet, hasToast: !!s.toast, toast: s.toast || '',
+      isHome: view === 'home', isSet: view === 'set', isEdit: view === 'edit', isImport: view === 'import', isCards: view === 'cards', isQuiz: view === 'quiz',
+      newSet: this.newSet, openImport: this.openImport
+    };
+    const total = s.sets.reduce((n, x) => n + x.cards.length, 0);
+    v.homeSub = s.sets.length ? plural(s.sets.length, 'set', 'sets') + ' · ' + plural(total, 'término', 'términos') : 'Aún no tienes sets';
+    v.sets = s.sets.map(x => {
+      const k = x.cards.filter(c => c.known).length, p = x.cards.length ? Math.round(k / x.cards.length * 100) : 0;
+      return { id: x.id, title: x.title, countLabel: plural(x.cards.length, 'término', 'términos'), langs: x.termLang + ' → ' + x.defLang, pctW: p + '%', pctLabel: p === 100 ? 'Dominado' : p + ' % dominado', open: () => this.openSet(x.id) };
+    });
+    v.noSets = !s.sets.length;
+
+    if (set) {
+      const cards = set.cards, known = cards.filter(c => c.known).length, pct = cards.length ? Math.round(known / cards.length * 100) : 0;
+      const starredN = cards.filter(c => c.starred).length;
+      Object.assign(v, {
+        setTitle: set.title, setMeta: plural(cards.length, 'término', 'términos') + ' · ' + L(set.termLang) + ' → ' + L(set.defLang), cardCount: cards.length,
+        knownLabel: 'Dominas ' + known + ' de ' + cards.length, knownW: pct + '%',
+        startCards: this.startCards, startWrite: () => this.startQuiz('write'), startListen: () => this.startQuiz('listen'),
+        editSet: this.editSet, exportSet: this.exportSet, delSet: this.delSet, delLabel: s.confirmDel ? '¿Seguro? Pulsa otra vez' : 'Eliminar',
+        toggleAccents: () => this.updateSet(set.id, x => ({ ...x, ignoreAccents: !x.ignoreAccents })), accPressed: String(!!set.ignoreAccents),
+        accTrack: set.ignoreAccents ? 'var(--primary)' : 'var(--border)', accKnob: set.ignoreAccents ? 'translateX(20px)' : 'translateX(0)',
+        setCards: cards.map(c => ({ id: c.id, term: c.term, def: c.def,
+          starGlyph: c.starred ? '★' : '☆', starColor: c.starred ? 'var(--star)' : 'var(--muted)', starLabel: c.starred ? 'Quitar estrella' : 'Marcar con estrella',
+          knownDot: c.known ? 'var(--ok)' : 'var(--border)', knownTitle: c.known ? 'Ya lo sabes' : 'Sigues aprendiendo',
+          onTerm: e => this.updateCard(set.id, c.id, { term: e.target.value }), onDef: e => this.updateCard(set.id, c.id, { def: e.target.value }),
+          onStar: () => this.updateCard(set.id, c.id, { starred: !c.starred }), speakTerm: () => this.speak(c.term, set.termLang) }))
+      });
+
+      const fc = s.fc;
+      if (view === 'cards' && fc) {
+        const c = cards.find(x => x.id === fc.ids[fc.index]) || { term: '', def: '', starred: false };
+        const tf = fc.startSide === 'term', front = tf ? c.term : c.def, back = tf ? c.def : c.term;
+        const fl = tf ? set.termLang : set.defLang, bl = tf ? set.defLang : set.termLang;
+        const stop = f => e => { e.stopPropagation(); f(); };
+        const knownN = Object.values(fc.results).filter(x => x === 'know').length, learnN = Object.values(fc.results).filter(x => x === 'learn').length;
+        Object.assign(v, {
+          fcActive: !fc.done, fcDone: fc.done, fcCounter: Math.min(fc.index + 1, fc.ids.length) + ' / ' + fc.ids.length,
+          fcFront: front, fcBack: back, fcFrontLabel: (tf ? 'Término · ' : 'Definición · ') + L(fl), fcBackLabel: (tf ? 'Definición · ' : 'Término · ') + L(bl),
+          flip: this.flip, cardTransform: fc.flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+          cardTransition: fc.instant ? 'none' : 'transform .55s cubic-bezier(.3,.7,.2,1)', cardAnim: 'rp-in' + (fc.anim % 2) + ' .35s ease both',
+          fcPrev: () => this.fcGo(-1), fcNext: () => this.fcGo(1), fcKnow: () => this.fcMark('know'), fcLearn: () => this.fcMark('learn'), fcPrevOp: fc.index === 0 ? '.4' : '1',
+          fcSpeakFront: stop(() => this.speak(front, fl)), fcSpeakBack: stop(() => this.speak(back, bl)), fcStar: stop(() => this.fcStar()),
+          fcStarGlyph: c.starred ? '★' : '☆', fcStarColor: c.starred ? 'var(--star)' : 'var(--muted)', fcStarLabel: c.starred ? 'Quitar estrella' : 'Marcar con estrella',
+          fcProgW: ((fc.done ? fc.ids.length : fc.index) / fc.ids.length * 100) + '%',
+          fcChips: [
+            this.chip('Barajar', fc.shuffle, () => this.fcRebuild({ shuffle: !fc.shuffle })),
+            this.chip('Término primero', tf, () => { this.fcPrefs = { ...(this.fcPrefs || {}), startSide: 'term' }; this.fcSet({ startSide: 'term', flipped: false, instant: true }); }),
+            this.chip('Definición primero', !tf, () => { this.fcPrefs = { ...(this.fcPrefs || {}), startSide: 'def' }; this.fcSet({ startSide: 'def', flipped: false, instant: true }); }),
+            this.chip('★ Solo con estrella (' + starredN + ')', fc.starredOnly, () => this.fcRebuild({ starredOnly: !fc.starredOnly }))
+          ],
+          fcKnownN: knownN, fcLearnN: learnN, fcHasLearn: learnN > 0,
+          fcDoneTitle: learnN === 0 && knownN > 0 ? '¡Muy bien! Ya te las sabes todas.' : 'Ronda terminada',
+          fcDoneSub: plural(fc.ids.length, 'tarjeta repasada', 'tarjetas repasadas'),
+          fcReviewLabel: 'Repasar ' + plural(learnN, 'tarjeta', 'tarjetas') + ' de “Sigo aprendiendo”',
+          fcReviewLearn: () => this.fcRebuild({}, fc.ids.filter(id => fc.results[id] === 'learn')),
+          fcRestart: () => this.fcRebuild({})
+        });
+      }
+
+      const q = s.quiz;
+      if (view === 'quiz' && q) {
+        const isW = q.mode === 'write', sd = this.sides(q), side = x => x === 'term' ? 'el término' : 'la definición';
+        const lang = x => x === 'term' ? set.termLang : set.defLang;
+        Object.assign(v, {
+          qTitle: isW ? 'Escribir' : 'Escuchar', qSetup: q.phase === 'setup', qActive: q.phase === 'answer' || q.phase === 'feedback', qDone: q.phase === 'done',
+          isWriteMode: isW, isListenMode: !isW, qSetupTitle: isW ? 'Modo Escribir' : 'Modo Escuchar', qCountLabel: plural(cards.length, 'tarjeta', 'tarjetas') + ' en esta sesión',
+          qGroups: isW ? [
+            { title: 'Se muestra', chips: [this.chip('Definición', q.showSide === 'def', () => this.qSetOpt({ showSide: 'def' })), this.chip('Término', q.showSide === 'term', () => this.qSetOpt({ showSide: 'term' }))] }
+          ] : [
+            { title: 'Qué se escucha', chips: [this.chip('Término', q.hearSide === 'term', () => this.qSetOpt({ hearSide: 'term' })), this.chip('Definición', q.hearSide === 'def', () => this.qSetOpt({ hearSide: 'def' }))] },
+            { title: 'Qué escribes', chips: [this.chip('Lo mismo (dictado)', q.writeWhat === 'same', () => this.qSetOpt({ writeWhat: 'same' })), this.chip('El otro lado (traducción)', q.writeWhat === 'other', () => this.qSetOpt({ writeWhat: 'other' }))] }
+          ],
+          qSetupHint: isW ? 'Verás ' + side(sd.prompt) + ' (' + L(lang(sd.prompt)) + ') y escribirás ' + side(sd.answer) + ' (' + L(lang(sd.answer)) + ').'
+            : 'Escucharás ' + side(sd.prompt) + ' en ' + L(lang(sd.prompt)) + ' y escribirás ' + side(sd.answer) + ' (' + L(lang(sd.answer)) + '). El texto no se muestra hasta que respondas.',
+          ttsMissing: !isW && !('speechSynthesis' in window), qStart: () => this.quizBegin()
+        });
+        if (v.qActive) {
+          const c = this.qCard() || { term: '', def: '' }, pl = lang(sd.prompt), al = lang(sd.answer);
+          Object.assign(v, {
+            qPrompt: c[sd.prompt], qPromptLang: (sd.prompt === 'term' ? 'Término · ' : 'Definición · ') + L(pl), qHearLabel: 'Escucha ' + side(sd.prompt),
+            qAnswerLabel: 'Escribe ' + side(sd.answer) + ' · ' + L(al), qListenHint: isW ? '' : ' · R repetir · ⇧R lento',
+            qSpeakPrompt: () => this.speak(c[sd.prompt], pl), qPlay: () => this.qPlay(1), qSlow: () => this.qPlay(0.7),
+            qInput: q.input, onQInput: e => { const val = e.target.value; this.setState(p => ({ quiz: { ...p.quiz, input: val } })); },
+            answerRef: this.answerRef, qReadOnly: q.phase === 'feedback', qCheck: () => this.qCheck(), qSkip: () => this.qCheck(true),
+            qIsAnswer: q.phase === 'answer', qIsFeedback: q.phase === 'feedback',
+            qCounter: (q.pos + 1) + ' / ' + q.queue.length, qProgW: (q.pos / q.queue.length * 100) + '%', qRetryRound: q.pos >= q.total,
+            qAnim: 'rp-in' + (q.anim % 2) + ' .3s ease both', qOverride: () => this.qOverride(), qNext: () => this.qNext()
+          });
+          const fb = q.fb;
+          if (fb) {
+            const map = {
+              correct: ['Correcto', '✓', 'var(--ok)', 'var(--ok-soft)', 'var(--ok-ink)'],
+              almost: ['Casi — se aceptó', '≈', 'var(--warn)', 'var(--warn-soft)', 'var(--warn-ink)'],
+              wrong: ['Incorrecto', '✕', 'var(--bad)', 'var(--bad-soft)', 'var(--bad-ink)'],
+              override: ['Marcada como correcta', '✓', 'var(--ok)', 'var(--ok-soft)', 'var(--ok-ink)']
+            }[fb.result];
+            Object.assign(v, {
+              fbTitle: map[0], fbGlyph: map[1], fbBorder: map[2], fbBg: map[3], fbInk: map[4],
+              fbAlmost: fb.result === 'almost', fbWrong: fb.result === 'wrong', fbShowCorrect: fb.result === 'correct' || fb.result === 'override',
+              fbGiven: fb.given || '(sin respuesta)', fbCorrectText: fb.correct,
+              fbAltSegs: fb.segs ? fb.segs.b : [], fbGivenSegs: fb.segs ? fb.segs.a : []
+            });
+          }
+        }
+        if (v.qDone) {
+          const ok = Object.values(q.first).filter(Boolean).length, pct = q.total ? Math.round(ok / q.total * 100) : 0;
+          const errs = Object.keys(q.errors).map(id => { const c = cards.find(x => x.id === id); return c ? { id, prompt: c[sd.prompt], answer: c[sd.answer], given: q.errors[id].given || '(sin respuesta)' } : null; }).filter(Boolean);
+          Object.assign(v, {
+            qPct: pct + ' %', qPctDeg: (pct * 3.6) + 'deg', qScoreLine: ok + ' de ' + q.total + ' correctas a la primera',
+            qDoneTitle: pct === 100 ? '¡Perfecto!' : pct >= 80 ? '¡Muy bien!' : pct >= 50 ? 'Vas por buen camino' : 'Sigue practicando',
+            qErrors: errs, qErrCount: errs.length, qHasErrors: errs.length > 0, qNoErrors: errs.length === 0,
+            qRetryErrors: () => this.quizBegin(errs.map(e => e.id)), qRestart: () => this.quizBegin()
+          });
+        }
+      }
+    }
+
+    const d = s.draft;
+    if (view === 'edit' && d) {
+      Object.assign(v, {
+        editHeading: d.id ? 'Editar set' : 'Crear set', draftTitle: d.title, onDraftTitle: e => this.draftSet({ title: e.target.value }),
+        draftTermLang: d.termLang, draftDefLang: d.defLang, onDraftTermLang: e => this.draftSet({ termLang: e.target.value }), onDraftDefLang: e => this.draftSet({ defLang: e.target.value }),
+        langOpts: this.langOpts([d.termLang, d.defLang]),
+        toggleDraftAcc: () => this.draftSet({ ignoreAccents: !d.ignoreAccents }), draftAccPressed: String(!!d.ignoreAccents),
+        draftAccTrack: d.ignoreAccents ? 'var(--primary)' : 'var(--border)', draftAccKnob: d.ignoreAccents ? 'translateX(20px)' : 'translateX(0)',
+        draftRows: d.rows.map((r, i) => ({ id: r.id, n: i + 1, term: r.term, def: r.def,
+          onTerm: e => this.draftRow(r.id, { term: e.target.value }), onDef: e => this.draftRow(r.id, { def: e.target.value }),
+          up: () => this.moveRow(i, -1), down: () => this.moveRow(i, 1), del: () => this.delRow(r.id),
+          upDis: i === 0, downDis: i === d.rows.length - 1, upOp: i === 0 ? '.3' : '1', downOp: i === d.rows.length - 1 ? '.3' : '1' })),
+        addRow: this.addRow, saveDraft: this.saveDraft, cancelDraft: this.cancelDraft
+      });
+    }
+
+    if (view === 'import') {
+      const imp = s.imp, p = Component.parseImport(imp.text), valid = p.rows.filter(r => r.ok).length, bad = p.rows.length - valid;
+      const canSave = valid > 0 && !!(p.meta.title || imp.title.trim());
+      const meta = [];
+      if (p.meta.title) meta.push({ k: 'Título', v: p.meta.title });
+      if (p.meta.termLang) meta.push({ k: 'Término', v: p.meta.termLang });
+      if (p.meta.defLang) meta.push({ k: 'Definición', v: p.meta.defLang });
+      Object.assign(v, {
+        impText: imp.text, onImpText: e => this.impSet({ text: e.target.value }),
+        impTitle: imp.title, onImpTitle: e => this.impSet({ title: e.target.value }),
+        impTermLang: imp.termLang, impDefLang: imp.defLang, onImpTermLang: e => this.impSet({ termLang: e.target.value }), onImpDefLang: e => this.impSet({ defLang: e.target.value }),
+        impNeedTitle: !p.meta.title, impNeedTermLang: !p.meta.termLang, impNeedDefLang: !p.meta.defLang, impMeta: meta,
+        langOpts: this.langOpts([imp.termLang, imp.defLang]),
+        impRows: p.rows.map(r => ({ ...r, bad: !r.ok, bg: r.ok ? 'var(--bg)' : 'var(--bad-soft)', border: r.ok ? 'transparent' : 'var(--bad)' })),
+        impEmpty: p.rows.length === 0,
+        impSummary: p.rows.length ? plural(valid, 'tarjeta válida', 'tarjetas válidas') + (bad ? ' · ' + plural(bad, 'línea sin separador', 'líneas sin separador') : '') : '',
+        impDisabled: !canSave, impOpacity: canSave ? '1' : '.45', impBtnLabel: valid ? 'Importar ' + plural(valid, 'tarjeta', 'tarjetas') : 'Importar',
+        doImport: this.doImport, loadSample: () => this.impSet({ text: Component.SAMPLE }),
+        pickFile: () => { if (this.fileRef.current) this.fileRef.current.click(); }, fileRef: this.fileRef,
+        onFile: e => { const f = e.target.files && e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => this.impSet({ text: String(r.result || '') }); r.readAsText(f); e.target.value = ''; }
+      });
+    }
+    return v;
+  }
+}
+</script>
+</body>
+</html>
