@@ -4,6 +4,7 @@ import { langName, plural, shuffle } from '../lib/store';
 import { cancelSpeech, ttsSupported } from '../lib/speech';
 import { diffSegs, evaluate, type CheckResult, type DiffSeg } from '../lib/checkAnswer';
 import type { AppApi } from '../App';
+import { resumeQuiz, withQuizSession } from '../lib/sessions';
 import { Chip, Kbd, SpeakerIcon } from '../components';
 
 export type QuizMode = 'write' | 'listen';
@@ -16,9 +17,32 @@ const other = (s: Side): Side => (s === 'term' ? 'def' : 'term');
 const sideName = (s: Side) => (s === 'term' ? 'el término' : 'la definición');
 
 export default function Quiz({ set, api, mode, prefs }: { set: StudySet; api: AppApi; mode: QuizMode; prefs: MutableRefObject<QuizPrefs> }) {
-  const [opt, setOpt] = useState<QuizPrefs>({ ...prefs.current });
-  const [phase, setPhase] = useState<Phase>('setup');
-  const [r, setR] = useState<Round>({ queue: [], pos: 0, total: 0, first: {}, errors: {}, input: '', fb: null, anim: 0 });
+  // Resume a round saved in a previous visit (it survives closing the page).
+  const [saved] = useState(() => resumeQuiz(set, mode));
+  const [resumed, setResumed] = useState(!!saved);
+  const [opt, setOpt] = useState<QuizPrefs>(saved ? { ...saved.opt } : { ...prefs.current });
+  const [phase, setPhase] = useState<Phase>(saved ? 'answer' : 'setup');
+  const [r, setR] = useState<Round>(saved
+    ? { queue: saved.queue, pos: saved.pos, total: saved.total, first: saved.first, errors: saved.errors, input: '', fb: null, anim: 1 }
+    : { queue: [], pos: 0, total: 0, first: {}, errors: {}, input: '', fb: null, anim: 0 });
+
+  // Save the round as it advances. During feedback the answer is already counted, so save the next position.
+  useEffect(() => {
+    if (phase === 'setup') return;
+    const pos = phase === 'feedback' ? r.pos + 1 : r.pos;
+    const session = phase !== 'done' && pos < r.queue.length
+      ? { opt, queue: r.queue, pos, total: r.total, first: r.first, errors: r.errors }
+      : undefined;
+    api.updateSet(set.id, (s) => withQuizSession(s, mode, session));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, r.queue, r.pos, r.first, r.errors]);
+
+  const restart = () => {
+    window.clearTimeout(autoT.current); cancelSpeech();
+    setResumed(false); setPhase('setup');
+    setR((x) => ({ ...x, queue: [], pos: 0, total: 0, first: {}, errors: {}, input: '', fb: null }));
+    api.updateSet(set.id, (s) => withQuizSession(s, mode, undefined));
+  };
   const answerRef = useRef<HTMLInputElement>(null);
   const autoT = useRef<number>();
   const isW = mode === 'write';
@@ -53,6 +77,7 @@ export default function Quiz({ set, api, mode, prefs }: { set: StudySet; api: Ap
     if (!valid.length) return;
     window.clearTimeout(autoT.current);
     const queue = shuffle(valid);
+    setResumed(false);
     setR((x) => ({ queue, pos: 0, total: queue.length, first: {}, errors: {}, input: '', fb: null, anim: x.anim + 1 }));
     setPhase('answer');
   };
@@ -172,6 +197,12 @@ export default function Quiz({ set, api, mode, prefs }: { set: StudySet; api: Ap
       {active && card && (
         <>
           <div className="bar primary" style={{ height: 6 }}><div style={{ width: (r.pos / r.queue.length) * 100 + '%' }} /></div>
+          {resumed && (
+            <div className="resume-note">
+              <span>Continúas donde lo dejaste.</span>
+              <button className="link-btn" onClick={restart}>Empezar de nuevo</button>
+            </div>
+          )}
           {r.pos >= r.total && (
             <div style={{ alignSelf: 'flex-start', padding: '4px 12px', borderRadius: 999, background: 'var(--warn-soft)', color: 'var(--warn-ink)', fontWeight: 700, fontSize: 13 }}>Repaso de falladas</div>
           )}

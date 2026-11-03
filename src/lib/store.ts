@@ -47,14 +47,14 @@ export function seed(): StudySet[] {
   ];
 }
 
-export interface Persisted { sets: StudySet[]; dark: boolean; nav: { view: 'home' | 'set' | 'learn'; setId: string | null } }
+export interface Persisted { sets: StudySet[]; dark: boolean; nav: { view: 'home' | 'set' | 'learn' | 'cards' | 'quiz'; setId: string | null; mode?: 'write' | 'listen' } }
 
 export function loadPersisted(): Persisted {
   let d: Partial<Persisted> | null = null;
   try { d = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch { /* ignore */ }
   const sets = d && Array.isArray(d.sets) ? d.sets : seed();
   const nav = d?.nav ?? { view: 'home' as const, setId: null };
-  const valid = (nav.view === 'set' || nav.view === 'learn') && sets.some((s) => s.id === nav.setId);
+  const valid = ['set', 'learn', 'cards', 'quiz'].includes(nav.view) && sets.some((s) => s.id === nav.setId);
   return { sets, dark: !!d?.dark, nav: valid ? nav : { view: 'home', setId: nav.setId ?? null } };
 }
 

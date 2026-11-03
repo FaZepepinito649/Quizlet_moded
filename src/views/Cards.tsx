@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type MutableRefObject } from 'react';
 import type { Side, StudySet } from '../lib/types';
 import { langName, plural, shuffle } from '../lib/store';
 import type { AppApi } from '../App';
+import { resumeCards } from '../lib/sessions';
 import { Chip, Kbd, SpeakerIcon, StarButton } from '../components';
 
 export interface CardPrefs { shuffle: boolean; startSide: Side; starredOnly: boolean }
@@ -16,12 +17,24 @@ function buildDeck(set: StudySet, opt: CardPrefs): string[] {
 }
 
 export default function Cards({ set, api, prefs }: { set: StudySet; api: AppApi; prefs: MutableRefObject<CardPrefs> }) {
+  // Resume a round saved in a previous visit (it survives closing the page).
+  const [saved] = useState(() => resumeCards(set));
+  const [resumed, setResumed] = useState(!!saved && saved.index > 0);
   const [opt, setOpt] = useState<CardPrefs>(() => {
+    if (saved) return { ...saved.opt };
     const o = { ...prefs.current };
     if (o.starredOnly && !set.cards.some((c) => c.starred)) o.starredOnly = false;
     return o;
   });
-  const [r, setR] = useState<Round>(() => ({ ids: buildDeck(set, opt), index: 0, flipped: false, results: {}, done: false, anim: 0 }));
+  const [r, setR] = useState<Round>(() => saved
+    ? { ids: saved.ids, index: saved.index, flipped: false, results: saved.results, done: false, anim: 0 }
+    : { ids: buildDeck(set, opt), index: 0, flipped: false, results: {}, done: false, anim: 0 });
+
+  // Save the round after every move; a finished round is cleared.
+  useEffect(() => {
+    api.updateSet(set.id, (s) => ({ ...s, cardsSession: r.done ? undefined : { opt, ids: r.ids, index: r.index, results: r.results } }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [r.ids, r.index, r.results, r.done, opt]);
 
   const updateOpt = (p: Partial<CardPrefs>) => {
     const o = { ...opt, ...p };
@@ -35,6 +48,7 @@ export default function Cards({ set, api, prefs }: { set: StudySet; api: AppApi;
     if (onlyIds && o.shuffle) ids = shuffle(ids);
     if (!ids.length) return api.flash('No hay tarjetas marcadas con estrella');
     updateOpt(p);
+    setResumed(false);
     setR((x) => ({ ids, index: 0, flipped: false, results: {}, done: false, anim: x.anim + 1 }));
   };
 
@@ -104,6 +118,12 @@ export default function Cards({ set, api, prefs }: { set: StudySet; api: AppApi;
         <Chip active={opt.starredOnly} onClick={() => rebuild({ starredOnly: !opt.starredOnly })}>★ Solo con estrella ({starredN})</Chip>
       </div>
       <div className="bar primary" style={{ height: 6 }}><div style={{ width: progress + '%' }} /></div>
+      {resumed && !r.done && (
+        <div className="resume-note">
+          <span>Continúas donde lo dejaste.</span>
+          <button className="link-btn" onClick={() => rebuild({})}>Empezar de nuevo</button>
+        </div>
+      )}
 
       {!r.done ? (
         <>

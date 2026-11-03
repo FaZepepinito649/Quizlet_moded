@@ -4,6 +4,7 @@ import { langName, plural } from '../lib/store';
 import type { AppApi } from '../App';
 import { SpeakerIcon, StarButton, Switch } from '../components';
 import { counts } from '../lib/learn';
+import type { QuizSession } from '../lib/sessions';
 
 interface Props {
   set: StudySet; api: AppApi;
@@ -65,15 +66,15 @@ export default function SetView({ set, api, onBack, onEdit, onExport, onDelete, 
               <span style={{ position: 'absolute', inset: 0, border: '2.5px solid currentColor', borderRadius: 5, background: 'var(--primary-soft)' }} />
             </span>
           </span>
-          <ModeText title="Tarjetas" sub="Voltea y repasa" />
+          <ModeText title="Tarjetas" sub={set.cardsSession ? `Continuar · ${set.cardsSession.index + 1} / ${set.cardsSession.ids.length}` : 'Voltea y repasa'} />
         </button>
         <button className="tile mode-tile" onClick={onWrite}>
           <span className="mode-icon" style={{ fontWeight: 800, fontSize: 20 }}>Aa</span>
-          <ModeText title="Escribir" sub="Escribe la respuesta" />
+          <ModeText title="Escribir" sub={quizSub(set.quizSession?.write) ?? 'Escribe la respuesta'} />
         </button>
         <button className="tile mode-tile" onClick={onListen}>
           <span className="mode-icon"><SpeakerIcon size={26} /></span>
-          <ModeText title="Escuchar" sub="Dictado y traducción" />
+          <ModeText title="Escuchar" sub={quizSub(set.quizSession?.listen) ?? 'Dictado y traducción'} />
         </button>
       </div>
 
@@ -114,6 +115,10 @@ export default function SetView({ set, api, onBack, onEdit, onExport, onDelete, 
       </div>
     </section>
   );
+}
+
+function quizSub(q?: QuizSession) {
+  return q ? `Continuar · ${Math.min(q.pos + 1, q.queue.length)} / ${q.queue.length}` : undefined;
 }
 
 function ModeText({ title, sub }: { title: string; sub: string }) {
