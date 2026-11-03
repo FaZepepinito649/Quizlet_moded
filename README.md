@@ -1,5 +1,7 @@
 # Repaso
 
+**App publicada:** https://fazepepinito649.github.io/Quizlet_moded/
+
 App web de estudio con flashcards (React + TypeScript + Vite). Todo se guarda en `localStorage` (clave `repaso.v1`).
 
 ```bash
@@ -20,3 +22,7 @@ npm run build    # genera dist/ (estático, base relativa)
 ## Diseño de referencia
 
 `project/Repaso.dc.html` es el prototipo exportado de Claude Design y `chats/` contiene la conversación de diseño. La app reproduce ese diseño y su comportamiento.
+
+## Publicación
+
+Cada push a `main` ejecuta `.github/workflows/deploy.yml`: corre las pruebas, compila y publica `dist/` en la rama `gh-pages`, que GitHub Pages sirve.
