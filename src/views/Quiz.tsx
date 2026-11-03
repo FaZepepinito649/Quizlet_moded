@@ -9,7 +9,7 @@ import { Chip, Kbd, SpeakerIcon } from '../components';
 export type QuizMode = 'write' | 'listen';
 export interface QuizPrefs { showSide: Side; hearSide: Side; writeWhat: 'same' | 'other' }
 type Phase = 'setup' | 'answer' | 'feedback' | 'done';
-interface Feedback { result: CheckResult | 'override'; given: string; correct: string; isFirst: boolean; segs: { expected: DiffSeg[]; given: DiffSeg[] } | null }
+export interface Feedback { result: CheckResult | 'override'; given: string; correct: string; isFirst: boolean; segs: { expected: DiffSeg[]; given: DiffSeg[] } | null }
 interface Round { queue: string[]; pos: number; total: number; first: Record<string, boolean>; errors: Record<string, string>; input: string; fb: Feedback | null; anim: number }
 
 const other = (s: Side): Side => (s === 'term' ? 'def' : 'term');
@@ -248,7 +248,7 @@ function Segs({ segs }: { segs: DiffSeg[] }) {
   return <>{segs.map((g, i) => <span key={i} className={'seg ' + (g.mark === 'none' ? '' : g.mark)}>{g.t}</span>)}</>;
 }
 
-function FeedbackBox({ fb, onOverride, onNext }: { fb: Feedback; onOverride: () => void; onNext: () => void }) {
+export function FeedbackBox({ fb, onOverride, onNext }: { fb: Feedback; onOverride: () => void; onNext: () => void }) {
   const [title, glyph, border, bg, ink] = FB_STYLE[fb.result];
   return (
     <div className="fb" style={{ borderColor: border, background: bg }} role="status">

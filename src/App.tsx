@@ -10,8 +10,9 @@ import EditSet, { type Draft } from './views/EditSet';
 import ImportSet from './views/ImportSet';
 import Cards, { type CardPrefs } from './views/Cards';
 import Quiz, { type QuizMode, type QuizPrefs } from './views/Quiz';
+import Learn from './views/Learn';
 
-export type View = 'home' | 'set' | 'edit' | 'import' | 'cards' | 'quiz';
+export type View = 'home' | 'set' | 'edit' | 'import' | 'cards' | 'quiz' | 'learn';
 
 export interface AppApi {
   flash: (msg: string) => void;
@@ -42,12 +43,13 @@ export default function App() {
 
   const cur = sets.find((s) => s.id === setId) ?? null;
   // Fall back gracefully if the current set disappeared.
-  const shown: View = (['set', 'cards', 'quiz'].includes(view) && !cur) || (view === 'edit' && !draft) ? 'home' : view;
+  const shown: View = (['set', 'cards', 'quiz', 'learn'].includes(view) && !cur) || (view === 'edit' && !draft) ? 'home' : view;
 
   // ---------- effects ----------
   useEffect(() => { document.body.classList.toggle('dark', dark); }, [dark]);
   useEffect(() => {
-    const v = shown === 'home' || shown === 'set' ? shown : setId && cur ? 'set' : 'home';
+    // Aprender is reopened where you left it; other study modes reopen on the set page.
+    const v = shown === 'home' || shown === 'set' || shown === 'learn' ? shown : setId && cur ? 'set' : 'home';
     savePersisted({ sets, dark, nav: { view: v, setId } });
   }, [sets, dark, shown, setId, cur]);
   useEffect(() => { window.scrollTo({ top: 0 }); }, [shown]);
@@ -87,6 +89,10 @@ export default function App() {
   const startCards = () => {
     if (!cur?.cards.length) return flash('Este set no tiene tarjetas');
     setSession((n) => n + 1); setView('cards');
+  };
+  const startLearn = () => {
+    if (!cur?.cards.length) return flash('Este set no tiene tarjetas');
+    setSession((n) => n + 1); setView('learn');
   };
   const startQuiz = (mode: QuizMode) => {
     if (!cur?.cards.length) return flash('Este set no tiene tarjetas');
@@ -138,7 +144,7 @@ export default function App() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
-      if (shown === 'cards' || shown === 'quiz') toSet();
+      if (shown === 'cards' || shown === 'quiz' || shown === 'learn') toSet();
       else if (shown === 'edit') cancelDraft();
       else if (shown === 'import' || shown === 'set') goHome();
     };
@@ -166,11 +172,12 @@ export default function App() {
         {shown === 'home' && <Home sets={sets} onOpen={openSet} onNew={newSet} onImport={() => setView('import')} />}
         {shown === 'set' && cur && (
           <SetView key={cur.id} set={cur} api={api} onBack={goHome} onEdit={editSet} onExport={exportSet} onDelete={deleteSet}
-            onCards={startCards} onWrite={() => startQuiz('write')} onListen={() => startQuiz('listen')} />
+            onCards={startCards} onLearn={startLearn} onWrite={() => startQuiz('write')} onListen={() => startQuiz('listen')} />
         )}
         {shown === 'edit' && draft && <EditSet initial={draft} onCancel={cancelDraft} onSave={saveDraft} />}
         {shown === 'import' && <ImportSet onBack={goHome} onImport={importSet} flash={flash} />}
         {shown === 'cards' && cur && <Cards key={session} set={cur} api={api} prefs={cardPrefs} />}
+        {shown === 'learn' && cur && <Learn key={session} set={cur} api={api} />}
         {shown === 'quiz' && cur && <Quiz key={session} set={cur} api={api} mode={quizMode} prefs={quizPrefs} />}
       </main>
       {toast && <div className="toast" role="status">{toast}</div>}

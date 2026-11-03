@@ -184,3 +184,16 @@ select.field { cursor: pointer; font-weight: 600; font-size: 15px; padding: 11px
   .fc-controls .fc-nav:last-child { order: 4; }
 }
 .add-row:hover { border-color: var(--primary) !important; color: var(--primary) !important; }
+
+/* ---------- aprender ---------- */
+.mastery-bar { display: flex; height: 10px; border-radius: 99px; background: var(--surface2); overflow: hidden; }
+.mastery-bar > div { height: 100%; transition: width .4s; }
+.level-pill { margin-left: 8px; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 700; color: var(--text); background: color-mix(in oklch, var(--lvl) 22%, var(--surface)); border: 1.5px solid var(--lvl); white-space: nowrap; }
+.mc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 10px; }
+.mc-opt { display: flex; align-items: center; gap: 12px; text-align: left; padding: 16px 18px; border-radius: 14px; border: 2px solid var(--border); background: var(--surface); font-size: 17px; font-weight: 600; cursor: pointer; transition: border-color .15s, background .15s, opacity .15s; }
+.mc-opt:hover:not(:disabled) { border-color: var(--primary); }
+.mc-opt:disabled { cursor: default; }
+.mc-opt.right { border-color: var(--ok); background: var(--ok-soft); color: var(--ok-ink); }
+.mc-opt.wrong { border-color: var(--bad); background: var(--bad-soft); color: var(--bad-ink); text-decoration: line-through; }
+.mc-opt.dim { opacity: .5; }
+.mode-tile.featured { border-color: var(--primary-soft); }
