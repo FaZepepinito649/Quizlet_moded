@@ -3,20 +3,26 @@ import type { StudySet } from '../lib/types';
 import { langName, plural } from '../lib/store';
 import type { AppApi } from '../App';
 import { SpeakerIcon, StarButton, Switch } from '../components';
+import { counts } from '../lib/learn';
 
 interface Props {
   set: StudySet; api: AppApi;
   onBack: () => void; onEdit: () => void; onExport: () => void; onDelete: () => void;
-  onCards: () => void; onWrite: () => void; onListen: () => void;
+  onCards: () => void; onLearn: () => void; onWrite: () => void; onListen: () => void;
 }
 
-export default function SetView({ set, api, onBack, onEdit, onExport, onDelete, onCards, onWrite, onListen }: Props) {
+export default function SetView({ set, api, onBack, onEdit, onExport, onDelete, onCards, onLearn, onWrite, onListen }: Props) {
   const [confirmDel, setConfirmDel] = useState(false);
   const delT = useRef<number>();
   useEffect(() => () => window.clearTimeout(delT.current), []);
   const cards = set.cards;
   const known = cards.filter((c) => c.known).length;
   const pct = cards.length ? Math.round((known / cards.length) * 100) : 0;
+
+  const lc = counts(set);
+  const learnSub = set.learn && (set.learn.q || lc.dominado < lc.total)
+    ? `Continuar · ${lc.dominado} de ${lc.total} dominados`
+    : lc.total && lc.dominado === lc.total ? 'Todo dominado' : 'Rondas adaptativas';
 
   const del = () => {
     if (!confirmDel) {
@@ -48,6 +54,10 @@ export default function SetView({ set, api, onBack, onEdit, onExport, onDelete, 
       </div>
 
       <div className="grid-modes">
+        <button className="tile mode-tile featured" onClick={onLearn}>
+          <span className="mode-icon" style={{ background: 'var(--primary)', color: 'var(--on-primary)', fontWeight: 800, fontSize: 22 }}>✓</span>
+          <ModeText title="Aprender" sub={learnSub} />
+        </button>
         <button className="tile mode-tile" onClick={onCards}>
           <span className="mode-icon">
             <span style={{ position: 'relative', width: 24, height: 18, display: 'block' }}>
