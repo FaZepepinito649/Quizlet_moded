@@ -15,6 +15,10 @@ export interface StudySet {
   /** Saved progress of the current Aprender round (persisted across page reloads). */
   learn?: import('./learn').LearnState;
   learnPrefs?: import('./learn').LearnPrefs;
+  /** Saved Tarjetas round in progress. */
+  cardsSession?: import('./sessions').CardsSession;
+  /** Saved Escribir / Escuchar rounds in progress. */
+  quizSession?: Partial<Record<import('./sessions').QuizMode, import('./sessions').QuizSession>>;
 }
 
 export type Side = 'term' | 'def';

@@ -197,3 +197,4 @@ select.field { cursor: pointer; font-weight: 600; font-size: 15px; padding: 11px
 .mc-opt.wrong { border-color: var(--bad); background: var(--bad-soft); color: var(--bad-ink); text-decoration: line-through; }
 .mc-opt.dim { opacity: .5; }
 .mode-tile.featured { border-color: var(--primary-soft); }
+.resume-note { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px 12px; padding: 8px 8px 8px 14px; border-radius: 12px; background: var(--primary-soft); color: var(--primary-strong); font-weight: 700; font-size: 14px; }

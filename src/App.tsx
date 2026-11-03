@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Card, StudySet } from './lib/types';
-import { loadPersisted, newCard, savePersisted, uid } from './lib/store';
+import { loadPersisted, newCard, savePersisted, uid, type Persisted } from './lib/store';
 import { cancelSpeech, speak as tts, warmVoices } from './lib/speech';
 import { checkAnswer } from './lib/checkAnswer';
 import { exportFileName, exportText } from './lib/importFormat';
@@ -34,7 +34,7 @@ export default function App() {
   const [view, setView] = useState<View>(initial.nav.view);
   const [setId, setSetId] = useState<string | null>(initial.nav.setId);
   const [draft, setDraft] = useState<Draft | null>(null);
-  const [quizMode, setQuizMode] = useState<QuizMode>('write');
+  const [quizMode, setQuizMode] = useState<QuizMode>(initial.nav.mode ?? 'write');
   const [session, setSession] = useState(0); // remounts study views on each start
   const [toast, setToast] = useState<string | null>(null);
   const toastT = useRef<number>();
@@ -48,10 +48,13 @@ export default function App() {
   // ---------- effects ----------
   useEffect(() => { document.body.classList.toggle('dark', dark); }, [dark]);
   useEffect(() => {
-    // Aprender is reopened where you left it; other study modes reopen on the set page.
-    const v = shown === 'home' || shown === 'set' || shown === 'learn' ? shown : setId && cur ? 'set' : 'home';
-    savePersisted({ sets, dark, nav: { view: v, setId } });
-  }, [sets, dark, shown, setId, cur]);
+    // Reopen the page where you left it: study modes only while they have a saved round.
+    const resumable = shown === 'learn'
+      || (shown === 'cards' && !!cur?.cardsSession)
+      || (shown === 'quiz' && !!cur?.quizSession?.[quizMode]);
+    const v = shown === 'home' || shown === 'set' || resumable ? shown : setId && cur ? 'set' : 'home';
+    savePersisted({ sets, dark, nav: { view: v as Persisted['nav']['view'], setId, mode: quizMode } });
+  }, [sets, dark, shown, setId, cur, quizMode]);
   useEffect(() => { window.scrollTo({ top: 0 }); }, [shown]);
   useEffect(() => {
     warmVoices();
